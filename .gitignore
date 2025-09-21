@@ -1,0 +1,13 @@
+#build
+build
+.vs
+out
+.idea
+old_src
+migrate_dependencies.py
+dependencylib
+download_dependencies.py
+test
+build_and_run.bat
+CMakeFiles
+/src/count_lines.py
