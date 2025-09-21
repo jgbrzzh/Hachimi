@@ -1,8 +1,9 @@
 #include <iostream>
-
+#include <vector>
+#include <fstream>
 
 int main()
 {
-	std::cout << "hello world" << std::endl;
+	std::ifstream file("../TEMP/example");
 	return 0;
 }
