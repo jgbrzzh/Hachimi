@@ -4,9 +4,8 @@ from pathlib import Path
 
 def pre_get_filepath_and_process():
     current_dir = Path.cwd()
-    # 假设当前在 Hachimi/src/python，项目根目录是 Hachimi
     project_root = current_dir.parent.parent  # 从 src/python 回到 Hachimi
-    toprocess_dir = project_root / "ToProcess"  # Hachimi 的上一级的 ToProcess
+    toprocess_dir = project_root / "ToProcess"
     
     print(f"当前目录: {current_dir}")
     print(f"项目根目录: {project_root}")
