@@ -1,10 +1,8 @@
 ﻿  main.cpp
-D:\App\c\miaow\src\main.cpp(38,17): warning C4309: “参数”: 截断常量值
 D:\App\c\miaow\src\main.cpp(39,17): warning C4309: “参数”: 截断常量值
 D:\App\c\miaow\src\main.cpp(40,17): warning C4309: “参数”: 截断常量值
 D:\App\c\miaow\src\main.cpp(41,17): warning C4309: “参数”: 截断常量值
-D:\App\c\miaow\src\main.cpp(71,8): warning C4552: ”<<“: 未使用表达式结果
-D:\App\c\miaow\src\main.cpp(72,8): warning C4552: ”>>“: 未使用表达式结果
+D:\App\c\miaow\src\main.cpp(42,17): warning C4309: “参数”: 截断常量值
   demo.vcxproj -> D:\App\c\miaow\src\x64\Debug\demo.exe
   'pwsh.exe' 不是内部或外部命令，也不是可运行的程序
   或批处理文件。

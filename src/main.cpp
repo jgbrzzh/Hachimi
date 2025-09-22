@@ -21,6 +21,7 @@ public:
 
 int main()
 {
+	std::cout << "hello";
 	//std::ifstream file(FileName,std::ios::binary);
 	//if (!file.is_open())
 	//{
@@ -40,7 +41,6 @@ int main()
 	text.push_back(241);
 	text.push_back(240);
 	hachimi ha(text);
-	ha.map();
 
 
 	system("pause");
@@ -64,13 +64,15 @@ int hachimi::map()
 
 	for (int j = 0;j < msg.size();j++)
 	{
-		char a = msg[j], tmp = 0;
+		unsigned char a = msg[j];
+		unsigned char tmp = 0;
 		for (int i = 0;i < 8;i++)
 		{
 			tmp = a;
-			tmp << i;
-			tmp >> (7 - i);
-			std::cout << tmp << " \n";
+			tmp <<= i;
+			tmp >>= (7 - i);
+			//printf("%d ", tmp);
+			//std::cout << (tmp+'0') << " " << std::endl;
 		}
 		std::cout << std::endl;
 	}
