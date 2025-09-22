@@ -19,8 +19,6 @@ def pre_get_filepath_and_process():
 def get_filepath_and_process(source_folder, project_root):
     processed_count = 0
     error_count = 0
-    
-
     temp_dir = project_root / "temp"
 
     if temp_dir.exists():
@@ -104,5 +102,8 @@ def detect_file_encoding(file_path):
 
     except Exception:
         return 'utf-8'
+def main():
+    pre_get_filepath_and_process()
 
-pre_get_filepath_and_process()
+if __name__ == "__main__":
+    main()
