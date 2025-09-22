@@ -17,3 +17,4 @@ CMakeFiles
 /src/demo
 /src/python/__pycache__
 /src/x64
+/src/*.exe
