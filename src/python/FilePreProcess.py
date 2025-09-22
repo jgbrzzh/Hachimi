@@ -4,7 +4,7 @@ from pathlib import Path
 
 def pre_get_filepath_and_process():
     current_dir = Path.cwd()
-    project_root = current_dir.parent.parent  # 从 src/python 回到 Hachimi
+    project_root = current_dir.parent  # 从 src 回到 Hachimi
     toprocess_dir = project_root / "ToProcess"
     
     print(f"当前目录: {current_dir}")
