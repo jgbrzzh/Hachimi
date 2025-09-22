@@ -14,7 +14,8 @@ CMakeFiles
 /src/count_lines.py
 /src/a.exe
 /src/main.exe
-/src/demo
+/src/ha
+/src/ha*
 /src/python/__pycache__
 /src/x64
 /src/*.exe
