@@ -10,7 +10,6 @@ def get_filepath():
 
 def print_and_get_filepath():
     current_dir,project_root,toprocess_dir = get_filepath()
-
     print(f"当前目录: {current_dir}")
     print(f"项目根目录: {project_root}")
     print(f"ToProcess目录: {toprocess_dir}")

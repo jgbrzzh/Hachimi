@@ -3,7 +3,7 @@ class MainProcess:
     def __init__(self):
         self.count = 0
         self.choice= None
-        from python.FilePreProcess import get_filepath
+        from PreProcess.FilePreProcess import get_filepath
         self.current_dir,self.project_root,self.toprocess_dir = get_filepath()
 
 
@@ -13,7 +13,7 @@ class MainProcess:
             print("开始运行前请将要处理的文件放入ToProcess文件夹中，处理完成的文件会保存在Result文件夹中。")
         print("请选择要进行的操作:")
         print("1. 预处理文件 (转换为UTF-8编码)")
-        print("2. 加密")
+        print("2. 加密(包括预处理)")
         print("3. 解密")
         print("4. 退出")
 
@@ -22,10 +22,11 @@ class MainProcess:
         self.choice = input("输入选项编号 (1-4): ")
 
     def process_choice(self):
+        from PreProcess.FilePreProcessRunner import main_FileProProcess_run
         if self.choice == '1':
-            from python.FilePreProcessRunner import main_FileProProcess_run
             main_FileProProcess_run()
         elif self.choice == '2':
+            main_FileProProcess_run()
             pass
         elif self.choice == '3':
             pass
