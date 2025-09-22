@@ -12,5 +12,5 @@ build_and_run.bat
 CMakeFiles
 /src/count_lines.py
 /src/a.exe
-/src/demo.*
+/src/demo*
 /src/x64
