@@ -2,6 +2,7 @@
 build
 .vs
 out
+.idea
 old_src
 migrate_dependencies.py
 dependencylib
@@ -11,6 +12,3 @@ build_and_run.bat
 CMakeFiles
 /src/count_lines.py
 /src/a.exe
-.idea
-temp
-/src/main.exe
