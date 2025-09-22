@@ -4,6 +4,7 @@ build
 out
 .idea
 old_src
+TOProcess
 migrate_dependencies.py
 dependencylib
 download_dependencies.py
@@ -13,3 +14,4 @@ CMakeFiles
 /src/count_lines.py
 /src/a.exe
 /src/main.exe
+/src/demo
