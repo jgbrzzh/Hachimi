@@ -1,5 +1,7 @@
-from FilePreProcess import main_FileProProcess
-def run():
+from .FilePreProcess import main_FileProProcess
+
+def main_FileProProcess_run():
     main_FileProProcess()
+
 if __name__ == "__main__":
-    run()
+    main_FileProProcess_run()
