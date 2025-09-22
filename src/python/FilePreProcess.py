@@ -102,8 +102,8 @@ def detect_file_encoding(file_path):
 
     except Exception:
         return 'utf-8'
-def main():
+def main_FileProProcess():
     pre_get_filepath_and_process()
 
 if __name__ == "__main__":
-    main()
+    main_FileProProcess()
