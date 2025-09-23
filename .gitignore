@@ -17,9 +17,11 @@ CMakeFiles
 /src/ha
 /src/ha*
 /src/PreProcess/__pycache__
+/src/GetFile/__pycache__
 /src/x64
 /src/*.exe
 temp
 temp/hachimi.txt
 temp/out1.bin
 
+*.pyc

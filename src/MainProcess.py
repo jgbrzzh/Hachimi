@@ -22,17 +22,20 @@ class MainProcess:
         self.choice = input("输入选项编号 (1-4): ")
 
     def process_choice(self):
-        current_dir = Path.cwd()
-        print(current_dir)
+        #self.choice = input("输入选项编号 (1-4): ")
+        #current_dir = Path.cwd()
+        #print(current_dir)
         from PreProcess.FilePreProcessRunner import main_FileProProcess_run #弃用
-        current_dir = Path.cwd()
-        print(current_dir)
+        #current_dir = Path.cwd()
+        #print(current_dir)
         from HexConvert.HexConverter import bin_to_hex, hex_to_bin
+        from GetFilepath.GetFile import get_file_v2
         if self.choice == '1':
             main_FileProProcess_run()
         elif self.choice == '2':
             #main_FileProProcess_run()
-            pass
+            get_file_v2()
+
         elif self.choice == '3':
             pass
         elif self.choice == '4':
