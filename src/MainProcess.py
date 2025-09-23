@@ -1,4 +1,4 @@
-
+from pathlib import Path
 class MainProcess:
     def __init__(self):
         self.count = 0
@@ -12,8 +12,8 @@ class MainProcess:
         if self.count == 1:
             print("开始运行前请将要处理的文件放入ToProcess文件夹中，处理完成的文件会保存在Result文件夹中。")
         print("请选择要进行的操作:")
-        print("1. 预处理文件 (转换为UTF-8编码)")
-        print("2. 加密(包括预处理)")
+        print("1. 预处理文件 (转换为UTF-8编码)(已弃用)")
+        print("2. 加密")
         print("3. 解密")
         print("4. 退出")
 
@@ -22,11 +22,16 @@ class MainProcess:
         self.choice = input("输入选项编号 (1-4): ")
 
     def process_choice(self):
-        from PreProcess.FilePreProcessRunner import main_FileProProcess_run
+        current_dir = Path.cwd()
+        print(current_dir)
+        from PreProcess.FilePreProcessRunner import main_FileProProcess_run #弃用
+        current_dir = Path.cwd()
+        print(current_dir)
+        from HexConvert.HexConverter import bin_to_hex, hex_to_bin
         if self.choice == '1':
             main_FileProProcess_run()
         elif self.choice == '2':
-            main_FileProProcess_run()
+            #main_FileProProcess_run()
             pass
         elif self.choice == '3':
             pass
