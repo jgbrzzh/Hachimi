@@ -12,7 +12,8 @@
 using namespace std;
 
 string FileName;
-string FileNameOUT("../temp/hachimi.txt");
+string EncodeOutFile("../temp/encode.txt");
+string DeEncodeOutFile("../temp/decode.bin");
 
 class hachimi {
 private:
