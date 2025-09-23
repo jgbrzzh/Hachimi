@@ -16,6 +16,6 @@ CMakeFiles
 /src/main.exe
 /src/ha
 /src/ha*
-/src/python/__pycache__
+/src/PreProcess/__pycache__
 /src/x64
 /src/*.exe

@@ -2,14 +2,21 @@ import os
 import shutil
 from pathlib import Path
 
-def pre_get_filepath_and_process():
+def get_filepath():
     current_dir = Path.cwd()
     project_root = current_dir.parent  # 从 src 回到 Hachimi
     toprocess_dir = project_root / "ToProcess"
-    
+    return current_dir,project_root,toprocess_dir
+
+def print_and_get_filepath():
+    current_dir,project_root,toprocess_dir = get_filepath()
     print(f"当前目录: {current_dir}")
     print(f"项目根目录: {project_root}")
     print(f"ToProcess目录: {toprocess_dir}")
+    return current_dir,project_root,toprocess_dir
+
+def pre_get_filepath_and_process():
+    current_dir,project_root,toprocess_dir = print_and_get_filepath()
     
     if not toprocess_dir.exists():
         print(f"ToProcess文件夹不存在: {toprocess_dir}")

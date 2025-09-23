@@ -40,7 +40,7 @@ pip install -r requirements.txt
 3. **编译C++模块**
 ```bash
 # Windows (使用Visual Studio)
-python setup.py build_ext --inplace
+PreProcess setup.py build_ext --inplace
 
 # Linux/macOS
 make build
@@ -151,12 +151,12 @@ pip install -r requirements-dev.txt
 
 2. **运行测试**
 ```bash
-python -m pytest tests/ -v
+PreProcess -m pytest tests/ -v
 ```
 
 3. **代码格式化**
 ```bash
-black src/python/
+black src/PreProcess/
 clang-format -i src/cpp/src/*.cpp src/cpp/include/*.h
 ```
 
