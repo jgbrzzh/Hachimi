@@ -11,7 +11,7 @@
 
 using namespace std;
 
-string FileName("../temp/out1.bin");
+string FileName;
 string FileNameOUT("../temp/hachimi.txt");
 
 class hachimi {
@@ -26,29 +26,55 @@ public:
 	int remap();
 
 public:
-	hachimi(std::vector<char> content,string inFile);
+	hachimi(string inFile);
 	std::string process();
 };
 
-int main()
+int main(int argc, char* argv[])
 {
-	std::vector<char> text;
-	text.push_back(243);
-	text.push_back(242);
-	text.push_back(241);
-	text.push_back(240);
-	hachimi ha(text,FileName);
-	ha.map();
-	ha.remap();
+	int codeFlag = 0;//0:encode 1:decode
+	switch (argc)
+	{
+	case 1:
+		cout << "name.exe [encode/decode] filepath" << endl;
+		return 1;
+		break;
+	case 2://0 filepath   default:encode
+		FileName = string(argv[1]);
+		break;
+	case 3://0 <encode/decode> filepath
+		FileName = string(argv[2]);
+		if (argv[1] == "encode")
+		{
+		}
+		else if (argv[2] == "decode")
+		{
+			codeFlag = 1;
+		}
+		break;
+	default:
+		break;
+	}
+
+	hachimi ha(FileName);
+	if (codeFlag == 0)
+	{
+		ha.map();
+	}
+	else {
+		ha.remap();
+	}
+	//ha.map();
+	//ha.remap();
 
 	system("pause");
 	return 0;
 }
 
-hachimi::hachimi(std::vector<char> content, string inFile)
+hachimi::hachimi(string inFile)
 	:InFileName(inFile)
 {
-	binContent.open(InFileName, ios::out);
+	binContent.open(InFileName, ios::in);
 	readBin();
 	binContent.close();
 }
@@ -79,7 +105,7 @@ int hachimi::map()
 	output.open(FileNameOUT,ios::out | ios::trunc);
 
 	char lastNum = -1;//indicate last number
-	for (int j = 0;j < msg.size();j++)
+	for (int j = 0;j < msg.size() - 1;j++)
 	{
 		unsigned char a = msg[j];
 		unsigned char tmp = 0;
@@ -113,7 +139,6 @@ int hachimi::map()
 			}
 		} 
 	}
-
 	output.close();
 	return 0;
 }
@@ -121,14 +146,19 @@ int hachimi::map()
 int hachimi::remap()
 {
 	ifstream hachimi;
-	hachimi.open(FileNameOUT,ios::in);
+	hachimi.open(InFileName,ios::in);
 	if (!hachimi.is_open()){
-		cout << "file£º" << FileNameOUT << " cant open" << endl;
+		cout << "file£º" << InFileName << " cant open" << endl;
 	}
 	string text;
 	hachimi >> text;
+	hachimi.close();
+
+	ofstream out1;
+	out1.open(FileName, ios::out | ios::trunc | ios::binary);
 
 	string word;
+	unsigned char tt = 0, ttNum = 0;
 	for (int i = 0;i < text.size();i += 2)
 	{
 		word.clear();
@@ -137,18 +167,32 @@ int hachimi::remap()
 		if (word == (string)"¹þ")
 		{
 			cout << '0';
+			tt <<= 1;
+			ttNum++;
 		}
 		if (word == (string)"»ù")
 		{
 			cout << '1';
+			tt <<= 1;
+			tt++;
+			ttNum++;
 		}
 		if (word == (string)"ßä")
 		{
 			cout << '0' << '1';
+			tt <<= 2;
+			tt++;
+			ttNum++;
+			ttNum++;
+		}
+		if (ttNum == 8)
+		{
+			ttNum = 0;
+			out1 << tt;
+			tt = 0;
 		}
 	}
-
-	hachimi.close();
+	out1.close();
 	return 0;
 }
 
