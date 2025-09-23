@@ -4,7 +4,8 @@ import sys
 
 
 from pathlib import Path
-#sys.path[0] = str(Path(sys.path[0]).parent)#导致奇怪的bug，弃用
+#sys.path[0] = str(Path(sys.path[0]).parent) 导致奇怪的bug，弃用
+#update:奇怪的bug是因为模块(python文件)在被引用时，会自动运行该模块(python文件)代码，导致重复执行
 
 def get_filepath():
     current_dir = Path.cwd() #在被主程序调用时，current_dir是src
