@@ -5,56 +5,65 @@
 #include <cstdlib>
 #include <cstdio>
 
+//ha 0  哈
+//ji 1	基
+//mi 01	咪
+
 using namespace std;
 
-std::string FileName("../temp/out1.bin");
+string FileName("../temp/out1.bin");
+string FileNameOUT("../temp/hachimi.txt");
 
 class hachimi {
 private:
-
-public:
 	std::vector<char> msg;
+	ifstream binContent;
+	string  InFileName;
+	
+public:
+	int readBin();
 	int map();
 	int remap();
 
 public:
-	hachimi(std::vector<char> content);
+	hachimi(std::vector<char> content,string inFile);
 	std::string process();
 };
 
 int main()
 {
-	streambuf* oldcout;
-	std::cout << "hello"<<std::flush;
-	std::ifstream file(FileName,std::ios::binary);
-	if (!file.is_open())
-	{
-		std::cerr << "open "<< FileName<<" failed" << std::endl;
-		return 1;
-	}
-	std::cout << "open " << FileName << std::endl;
-	std::string content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
-	std::cout << "===文件内容===" << std::endl;
-	std::cout << content << std::endl;
-
-
 	std::vector<char> text;
 	text.push_back(243);
 	text.push_back(242);
 	text.push_back(241);
 	text.push_back(240);
-	hachimi ha(text);
+	hachimi ha(text,FileName);
 	ha.map();
 
 	system("pause");
-	file.close();
 	return 0;
 }
 
-hachimi::hachimi(std::vector<char> content)
-	:msg(content)
+hachimi::hachimi(std::vector<char> content, string inFile)
+	:InFileName(inFile)
 {
+	binContent.open(InFileName, ios::out);
+	readBin();
+	binContent.close();
+}
 
+int hachimi::readBin()
+{
+	char tmp;
+	while (true)
+	{
+		if (binContent.eof()){
+			break;
+		}
+		binContent >> tmp;
+		msg.push_back(tmp);
+	}
+	return 0;
 }
 
 int hachimi::map() 
@@ -65,22 +74,47 @@ int hachimi::map()
 		return 1;
 	}
 	
+	ofstream output;
+	output.open(FileNameOUT,ios::out | ios::trunc);
 
+	char lastNum = -1;//indicate last number
 	for (int j = 0;j < msg.size();j++)
 	{
 		unsigned char a = msg[j];
 		unsigned char tmp = 0;
+		lastNum = -1;
 		for (int i = 0;i < 8;i++)
 		{
 			tmp = a;
 			tmp <<= i;
-			tmp >>= (7 - i);
-			printf("%d ", tmp);
-			//std::cout << (tmp+'0') << " " << std::endl;
-		}
+			tmp >>= 7;
+			if (tmp == 1) {
+				if (lastNum == 1 || lastNum == -1)
+				{
+					output << "基";
+				}
+				if (lastNum == 0)
+				{
+					output << "咪";
+				}
+				lastNum = 1;
+			}
+			else{
+				if (lastNum == 0)
+				{
+					output << "哈";
+				}
+				if(i==7)
+				{
+					output << "哈";
+				}
+
+				lastNum = 0;
+			}
+		} 
 		std::cout << std::endl;
 	}
 
-
+	output.close();
 	return 0;
 }
