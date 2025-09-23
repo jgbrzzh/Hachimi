@@ -1,4 +1,4 @@
-from pathlib import Path
+
 class MainProcess:
     def __init__(self):
         self.count = 0
@@ -29,12 +29,14 @@ class MainProcess:
         #current_dir = Path.cwd()
         #print(current_dir)
         from HexConvert.HexConverter import bin_to_hex, hex_to_bin
-        from GetFilepath.GetFile import get_file_v2
+        #from GetFilepath.GetFile import get_file_v2 #弃用 改为直接导入整个模块
+        import GetFilepath.GetFile
+        GetFilepath.GetFile.is_import_by_main = True #告诉GetFile模块它是被主程序调用的
         if self.choice == '1':
             main_FileProProcess_run()
         elif self.choice == '2':
             #main_FileProProcess_run()
-            get_file_v2()
+            GetFilepath.GetFile.get_file_v2()
 
         elif self.choice == '3':
             pass
