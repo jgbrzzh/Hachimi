@@ -103,7 +103,10 @@ int hachimi::map()
 	}
 	
 	ofstream output;
-	output.open(FileNameOUT,ios::out | ios::trunc);
+	output.open(EncodeOutFile,ios::out | ios::trunc);
+	if (!output.is_open()) {
+		cout << "file£º" << EncodeOutFile << " cant open" << endl;
+	}
 
 	char lastNum = -1;//indicate last number
 	for (int j = 0;j < msg.size() - 1;j++)
@@ -147,16 +150,19 @@ int hachimi::map()
 int hachimi::remap()
 {
 	ifstream hachimi;
-	hachimi.open(InFileName,ios::in);
+	hachimi.open(FileName,ios::in);
 	if (!hachimi.is_open()){
-		cout << "file£º" << InFileName << " cant open" << endl;
+		cout << "file£º" << FileName << " cant open" << endl;
 	}
 	string text;
 	hachimi >> text;
 	hachimi.close();
 
 	ofstream out1;
-	out1.open(FileName, ios::out | ios::trunc | ios::binary);
+	out1.open(DeEncodeOutFile, ios::out | ios::trunc | ios::binary);
+	if (!out1.is_open()) {
+		cout << "file£º" << DeEncodeOutFile << " cant open" << endl;
+	}
 
 	string word;
 	unsigned char tt = 0, ttNum = 0;
