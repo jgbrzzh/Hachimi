@@ -16,7 +16,7 @@ string FileNameOUT("../temp/hachimi.txt");
 
 class hachimi {
 private:
-	std::vector<char> msg;
+	std::vector<unsigned char> msg;
 	ifstream binContent;
 	string  InFileName;
 	
@@ -39,6 +39,7 @@ int main()
 	text.push_back(240);
 	hachimi ha(text,FileName);
 	ha.map();
+	ha.remap();
 
 	system("pause");
 	return 0;
@@ -108,13 +109,46 @@ int hachimi::map()
 				{
 					output << "¹þ";
 				}
-
 				lastNum = 0;
 			}
 		} 
-		std::cout << std::endl;
 	}
 
 	output.close();
 	return 0;
 }
+
+int hachimi::remap()
+{
+	ifstream hachimi;
+	hachimi.open(FileNameOUT,ios::in);
+	if (!hachimi.is_open()){
+		cout << "file£º" << FileNameOUT << " cant open" << endl;
+	}
+	string text;
+	hachimi >> text;
+
+	string word;
+	for (int i = 0;i < text.size();i += 2)
+	{
+		word.clear();
+		word += text[i];
+		word += text[i+1];
+		if (word == (string)"¹þ")
+		{
+			cout << '0';
+		}
+		if (word == (string)"»ù")
+		{
+			cout << '1';
+		}
+		if (word == (string)"ßä")
+		{
+			cout << '0' << '1';
+		}
+	}
+
+	hachimi.close();
+	return 0;
+}
+
