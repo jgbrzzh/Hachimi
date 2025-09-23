@@ -1,4 +1,7 @@
 """
+created by: zzh 2025-09-23
+
+
 from pathlib import Path
 sys.path[0] = str(Path(sys.path[0]).parent)#导致奇怪的bug，弃用
 #update:奇怪的bug是因为模块(python文件)在被引用时，会自动运行该模块(python文件)代码，导致重复执行
