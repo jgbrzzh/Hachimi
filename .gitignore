@@ -17,7 +17,9 @@ CMakeFiles
 /src/ha
 /src/ha*
 /src/PreProcess/__pycache__
+/src/GetFile/__pycache__
 /src/x64
 /src/*.exe
 /temp/*
 
+*.pyc

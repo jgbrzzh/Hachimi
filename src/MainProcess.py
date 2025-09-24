@@ -1,4 +1,7 @@
-from pathlib import Path
+"""
+created by: zzh 2025-09-21
+"""
+
 class MainProcess:
     def __init__(self):
         self.count = 0
@@ -22,17 +25,24 @@ class MainProcess:
         self.choice = input("输入选项编号 (1-4): ")
 
     def process_choice(self):
-        current_dir = Path.cwd()
-        print(current_dir)
+        #self.choice = input("输入选项编号 (1-4): ")
+        #current_dir = Path.cwd()
+        #print(current_dir)
         from PreProcess.FilePreProcessRunner import main_FileProProcess_run #弃用
-        current_dir = Path.cwd()
-        print(current_dir)
+        import PreProcess.FilePreProcessRunner
+        PreProcess.FilePreProcessRunner.is_import_by_main = True #告诉FilePreProcessRunner模块它是被主程序调用的
+        #current_dir = Path.cwd()
+        #print(current_dir)
         from HexConvert.HexConverter import bin_to_hex, hex_to_bin
+        #from GetFilepath.GetFile import get_file_v2 #弃用 改为直接导入整个模块
+        import GetFilepath.GetFile
+        GetFilepath.GetFile.is_import_by_main = True #告诉GetFile模块它是被主程序调用的
         if self.choice == '1':
             main_FileProProcess_run()
         elif self.choice == '2':
             #main_FileProProcess_run()
-            pass
+            GetFilepath.GetFile.get_file_v2()
+
         elif self.choice == '3':
             pass
         elif self.choice == '4':
