@@ -9,6 +9,23 @@ class MainProcess:
         from PreProcess.FilePreProcess import get_filepath
         self.current_dir,self.project_root,self.toprocess_dir = get_filepath()
 
+    def set_up_golbal(self):
+        import Config.Config
+
+        """
+        global Config.Config.is_import_by_main_v2
+        global Config.Config.is_debug
+        """
+
+        #Config.Config.is_import_by_main_v2 = True  # 设定全局变量,表示被主程序调用
+        Config.Config.change_import_by_main_v2(True)
+        #Config.Config.is_debug = True  # 设定全局变量,表示是否开启调试模式
+        Config.Config.change_debug(True)
+        if(Config.Config.is_import_by_main_v2):
+            print("从主程序启动")
+        if(Config.Config.is_debug):
+            print("开启调试模式")
+        import Config.Config
 
     def print_menu(self):
         self.count += 1
@@ -42,6 +59,7 @@ class MainProcess:
         elif self.choice == '2':
             #main_FileProProcess_run()
             GetFilepath.GetFile.get_file_v2()
+            #GetFilepath.GetFile.check_toprocess_exists_v2()
 
         elif self.choice == '3':
             pass
@@ -51,6 +69,7 @@ class MainProcess:
         else:
             print("无效选项，请重新选择。")
     def run(self):
+        self.set_up_golbal()
         while True:
             self.get_choice()
             self.process_choice()

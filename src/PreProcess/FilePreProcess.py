@@ -35,11 +35,11 @@ def print_and_get_filepath():
 def pre_get_filepath_and_process():
     #current_dir, project_root, toprocess_dir = print_and_get_filepath()
     sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
-    from Decorator.Decorator import print_decorator
+    #from Decorator.Decorator import print_decorator
     import Decorator.Decorator
     Decorator.Decorator.is_import_by_main = is_import_by_main #告诉Decorator模块它是否主程序调用的
     #current_dir, project_root, toprocess_dir = print_decorator(get_filepath())
-    current_dir, project_root, toprocess_dir = print_decorator(get_filepath)()
+    current_dir, project_root, toprocess_dir = Decorator.Decorator.print_decorator(get_filepath)()
     if not toprocess_dir.exists():
         print(f"ToProcess文件夹不存在: {toprocess_dir}")
         return
@@ -65,7 +65,7 @@ def get_filepath_and_process(source_folder, project_root):
         for file in files:
             full_file_path = os.path.join(root, file)
             try:
-                preprocess_file(full_file_path, source_folder, temp_dir)
+                process_file(full_file_path, source_folder, temp_dir)
                 processed_count += 1
             except Exception as e:
                 error_count += 1
@@ -76,7 +76,7 @@ def get_filepath_and_process(source_folder, project_root):
     print(f"文件保存在: {temp_dir}")
 
 
-def preprocess_file(file_path, source_folder, temp_dir):
+def process_file(file_path, source_folder, temp_dir):
     try:
         source_path = Path(file_path)
 
