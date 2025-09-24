@@ -15,6 +15,8 @@ import os
 
 
 
+
+
 def get_file_v2(): #获取文件路径的函数(可以根据调用方式，返回不同的路径)
     #下边这行放到函数里边是为了防止该语句在其所处模块(python文件)被引用时就执行从而导致奇怪的bug
 
@@ -25,16 +27,25 @@ def get_file_v2(): #获取文件路径的函数(可以根据调用方式，返�
 
     #from PreProcess.FilePreProcess import get_filepath
 
-    from src.PreProcess.FilePreProcess import get_filepath
+
+
     #from src.Config.Config import is_debug
-    import src.Config.Config
+
+
+    #src.Config.Config.change_debug(True)
     
-    # 修复：在函数内部获取最新的is_debug值，而不是在模块导入时固定值
-    is_debug = src.Config.Config.is_debug
+    # 导入Config模块获取最新配置 - 修复导入路径
+    sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+    # from src.PreProcess.FilePreProcess import get_filepath
+    #修复导入路径
+    from PreProcess.FilePreProcess import get_filepath
+    import Config.Config
+    is_debug = Config.Config.is_debug
     print(f"Debug状态: {is_debug}")
     
     if(is_debug):
-        print("from src.PreProcess.FilePreProcess import get_filepath执行成功")
+        #print("from src.PreProcess.FilePreProcess import get_filepath执行成功")
+        pass
     current_dir, project_root, toprocess_dir = get_filepath()
     if(is_import_by_main):#检测是否被主程序调用
         print("当前GetFilepath模块被主程序调用，正在执行get_file_v2")
@@ -69,10 +80,10 @@ def check_toprocess_exists_v2():
     return True
 
 def get_filepath_and_encode(source_folder, project_root):
-    # 导入Config模块获取最新配置
-    from src.Config.Config import is_import_by_main_v2
-    # 导入预处理函数
-    from src.PreProcess.FilePreProcess import preprocess_file
+    # 导入Config模块获取最新配置 - 修复导入路径
+    sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+    import Config.Config
+    is_import_by_main_v2 = Config.Config.is_import_by_main_v2
     
     if(is_import_by_main_v2):
         pass
@@ -88,7 +99,7 @@ def get_filepath_and_encode(source_folder, project_root):
             full_file_path = os.path.join(root, file)
             try:
                 # 使用正确的预处理函数
-                preprocess_file(full_file_path, source_folder, temp_dir)
+                #todo
                 processed_count += 1
             except Exception as e:
                 error_count += 1
