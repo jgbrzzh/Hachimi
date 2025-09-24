@@ -29,6 +29,8 @@ class MainProcess:
         #current_dir = Path.cwd()
         #print(current_dir)
         from PreProcess.FilePreProcessRunner import main_FileProProcess_run #弃用
+        import PreProcess.FilePreProcessRunner
+        PreProcess.FilePreProcessRunner.is_import_by_main = True #告诉FilePreProcessRunner模块它是被主程序调用的
         #current_dir = Path.cwd()
         #print(current_dir)
         from HexConvert.HexConverter import bin_to_hex, hex_to_bin

@@ -1,5 +1,7 @@
 """
 created by: zzh 2025-09-21
+由于LHY编解码方式更改，于2025-09-23弃用
+其获取文件路径的功能将逐步被GetFilepath替代
 """
 
 import os
@@ -20,17 +22,24 @@ def get_filepath():
     return current_dir, project_root, toprocess_dir
 
 
+""" 弃用，由装饰器实现
 def print_and_get_filepath():
     current_dir, project_root, toprocess_dir = get_filepath()
     print(f"当前目录: {current_dir}")
     print(f"代码根目录: {project_root}")
     print(f"ToProcess目录: {toprocess_dir}")
     return current_dir, project_root, toprocess_dir
+"""
 
 
 def pre_get_filepath_and_process():
-    current_dir, project_root, toprocess_dir = print_and_get_filepath()
-
+    #current_dir, project_root, toprocess_dir = print_and_get_filepath()
+    sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+    from Decorator.Decorator import print_decorator
+    import Decorator.Decorator
+    Decorator.Decorator.is_import_by_main = is_import_by_main #告诉Decorator模块它是否主程序调用的
+    #current_dir, project_root, toprocess_dir = print_decorator(get_filepath())
+    current_dir, project_root, toprocess_dir = print_decorator(get_filepath)()
     if not toprocess_dir.exists():
         print(f"ToProcess文件夹不存在: {toprocess_dir}")
         return
@@ -129,4 +138,5 @@ def main_FileProProcess():
 
 
 if __name__ == "__main__":
+    is_import_by_main = False
     main_FileProProcess()
