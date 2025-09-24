@@ -5,6 +5,11 @@
 #include <cstdlib>
 #include <cstdio>
 
+//openssl
+#include <openssl/evp.h>
+#include <openssl/rand.h>
+#include <openssl/err.h>
+
 //ha 0  Ήώ
 //ji 1	»ω
 //mi 01	ίδ
