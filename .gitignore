@@ -1,16 +1,18 @@
 #build
 build
+/temp
 .vs
 out
 .idea
 old_src
-TOProcess
+ToProcess
 migrate_dependencies.py
 dependencylib
 download_dependencies.py
 test
 build_and_run.bat
 CMakeFiles
+temp
 /src/count_lines.py
 /src/a.exe
 /src/main.exe
@@ -20,6 +22,8 @@ CMakeFiles
 /src/GetFile/__pycache__
 /src/x64
 /src/*.exe
-/temp/*
+/src/temp
+
 
 *.pyc
+
