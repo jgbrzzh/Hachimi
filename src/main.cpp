@@ -7,6 +7,7 @@
 
 //openssl
 #include <openssl/evp.h>
+#include <openssl/aes.h>
 #include <openssl/rand.h>
 #include <openssl/err.h>
 
@@ -15,6 +16,9 @@
 //mi 01	ßä
 
 using namespace std;
+
+int aesEncode(char* _pPassword, char* _pInput, int _InLen, char* _pOutBuf, int* _pOutLen);
+int aesDecode(char* _pPassword, char* _pInput, int _InLen, char* _pOutBuf, int* _pOutLen);
 
 string FileName;
 string EncodeOutFile("../temp/encode.txt");
@@ -38,7 +42,8 @@ public:
 
 int main(int argc, char* argv[])
 {
-	int codeFlag = 0;//0:encode 1:decode
+	int codeFlag = 1;//0:encode 1:decode
+#if false
 	switch (argc)
 	{
 	case 1:
@@ -52,6 +57,7 @@ int main(int argc, char* argv[])
 		FileName = string(argv[2]);
 		if (argv[1] == "encode")
 		{
+			codeFlag = 0;
 		}
 		else if (argv[2] == "decode")
 		{
@@ -61,17 +67,18 @@ int main(int argc, char* argv[])
 	default:
 		break;
 	}
+#endif
+
+	FileName = EncodeOutFile;
 
 	hachimi ha(FileName);
-	if (codeFlag == 0)
+	if (codeFlag == 0)//encode
 	{
 		ha.map();
 	}
 	else {
-		ha.remap();
+		ha.remap();//decode
 	}
-	//ha.map();
-	//ha.remap();
 
 	system("pause");
 	return 0;
@@ -154,14 +161,7 @@ int hachimi::map()
 
 int hachimi::remap()
 {
-	ifstream hachimi;
-	hachimi.open(FileName,ios::in);
-	if (!hachimi.is_open()){
-		cout << "file£º" << FileName << " cant open" << endl;
-	}
-	string text;
-	hachimi >> text;
-	hachimi.close();
+	vector<unsigned char>text = msg;
 
 	ofstream out1;
 	out1.open(DeEncodeOutFile, ios::out | ios::trunc | ios::binary);
@@ -171,7 +171,7 @@ int hachimi::remap()
 
 	string word;
 	unsigned char tt = 0, ttNum = 0;
-	for (int i = 0;i < text.size();i += 2)
+	for (int i = 0;i < text.size()-1;i += 2)
 	{
 		word.clear();
 		word += text[i];
@@ -208,3 +208,111 @@ int hachimi::remap()
 	return 0;
 }
 
+int aesEncode(char* _pPassword, char* _pInput, int _InLen, char* _pOutBuf, int* _pOutLen)
+{
+	EVP_CIPHER_CTX* pEn_ctx = NULL;
+
+	int ret = -1;
+	int flen = 0, outlen = 0;
+	int i, nrounds = 1;
+
+	unsigned char key[32] = { 0 };
+	unsigned char iv[32] = { 0 };
+
+	if (!_pPassword || !_pInput || !_pOutBuf || !_pOutLen) {
+		return ret;
+	}
+
+	const EVP_CIPHER* cipherType = EVP_aes_256_cbc();
+	if (cipherType == NULL) {
+		goto clean;
+	}
+
+	i = EVP_BytesToKey(cipherType, EVP_md5(), NULL, (unsigned char*)_pPassword, strlen(_pPassword), nrounds, key, iv);
+	if (i != 32) {
+		printf("Key size is %d bits - should be 256 bits\n", i);
+		goto clean;
+	}
+
+	pEn_ctx = EVP_CIPHER_CTX_new();
+	EVP_CIPHER_CTX_init(pEn_ctx);
+	EVP_EncryptInit_ex(pEn_ctx, cipherType, NULL, key, iv);
+
+	if (!EVP_EncryptUpdate(pEn_ctx, (unsigned char*)_pOutBuf, &outlen, (unsigned char*)_pInput, _InLen)) {
+		perror("\n Error,ENCRYPR_UPDATE:");
+		goto clean;
+	}
+
+	if (!EVP_EncryptFinal_ex(pEn_ctx, (unsigned char*)(_pOutBuf + outlen), &flen)) {
+		perror("\n Error,ENCRYPT_FINAL:");
+		goto clean;
+	}
+
+	*_pOutLen = outlen + flen;
+	ret = 0;
+
+clean:
+	if (pEn_ctx) {
+		EVP_CIPHER_CTX_cleanup(pEn_ctx);
+	}
+	if (pEn_ctx) {
+		EVP_CIPHER_CTX_free(pEn_ctx);
+	}
+
+	return ret;
+}
+
+
+int aesDecode(char* _pPassword, char* _pInput, int _InLen, char* _pOutBuf, int* _pOutLen)
+{
+	EVP_CIPHER_CTX* pDe_ctx = NULL;
+
+	int ret = -1;
+	int flen = 0, outlen = 0;
+	int i, nrounds = 1;
+
+	unsigned char key[32] = { 0 };
+	unsigned char iv[32] = { 0 };
+
+	if (!_pPassword || !_pInput || !_pOutBuf || !_pOutLen) {
+		return ret;
+	}
+
+	const EVP_CIPHER* cipherType = EVP_aes_256_cbc();
+	if (cipherType == NULL) {
+		goto clean;
+	}
+
+	i = EVP_BytesToKey(cipherType, EVP_md5(), NULL, (unsigned char*)_pPassword, strlen(_pPassword), nrounds, key, iv);
+	if (i != 32) {
+		printf("Key size is %d bits - should be 256 bits\n", i);
+		goto clean;
+	}
+
+	pDe_ctx = EVP_CIPHER_CTX_new();
+	EVP_CIPHER_CTX_init(pDe_ctx);
+	EVP_DecryptInit_ex(pDe_ctx, cipherType, NULL, key, iv);
+
+	if (!EVP_DecryptUpdate(pDe_ctx, (unsigned char*)_pOutBuf, &outlen, (unsigned char*)_pInput, _InLen)) {
+		perror("\n Error,ENCRYPR_UPDATE:");
+		goto clean;
+	}
+
+	if (!EVP_DecryptFinal_ex(pDe_ctx, (unsigned char*)(_pOutBuf + outlen), &flen)) {
+		perror("\n Error,ENCRYPT_FINAL:");
+		goto clean;
+	}
+
+	*_pOutLen = outlen + flen;
+	ret = 0;
+
+clean:
+	if (pDe_ctx) {
+		EVP_CIPHER_CTX_cleanup(pDe_ctx);
+	}
+	if (pDe_ctx) {
+		EVP_CIPHER_CTX_free(pDe_ctx);
+	}
+
+	return ret;
+}
