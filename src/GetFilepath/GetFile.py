@@ -121,8 +121,10 @@ def check_toprocess_exists_v2():
 def get_project_root():
 
     project_root = Path(__file__).resolve()
-    for _ in range(2):
-        p = p.parent
+    print(project_root)
+    for _ in range(3):
+        project_root = project_root.parent
+    print(project_root)
     return project_root
 
 def get_toprocess_dir():

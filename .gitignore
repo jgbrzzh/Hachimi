@@ -27,3 +27,6 @@ temp
 
 *.pyc
 
+libcrypto-3-x64.dll
+ha.pdb
+a.exe
