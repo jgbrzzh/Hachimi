@@ -11,9 +11,10 @@ print(sys.path)
 """
 import sys
 import os
-
-
-
+from pathlib import Path
+from typing import Iterable, Optional, Union
+import shutil
+import subprocess
 
 
 
@@ -85,7 +86,8 @@ def check_toprocess_exists_v2():
         return False
     return True
 
-def get_filepath_and_encode(source_folder, project_root):
+"""
+    def get_filepath_and_encode(source_folder, project_root): 被process_all_files替代
     # 导入Config模块获取最新配置 - 修复导入路径
     sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
     import Config.Config
@@ -114,6 +116,92 @@ def get_filepath_and_encode(source_folder, project_root):
     print("-" * 50)
     print(f"处理完成！成功: {processed_count}, 失败: {error_count}")
     print(f"文件保存在: {temp_dir}")
+    """
+
+def get_project_root():
+
+    project_root = Path(__file__).resolve()
+    for _ in range(2):
+        p = p.parent
+    return project_root
+
+def get_all_file_paths(
+    source_folder,
+    include_ext: Optional[Iterable[str]] = None,
+    as_str: bool = False
+):
+    source_path = Path(source_folder).resolve()
+    if not source_path.is_dir():
+        raise NotADirectoryError(f"源目录不存在: {source_path}")
+
+    if include_ext:
+        include_set = {e.lower() for e in include_ext}
+    else:
+        include_set = None
+
+    results: list[Path] = []
+    for p in source_path.rglob("*"):
+        if not p.is_file():
+            continue
+        if include_set and p.suffix.lower() not in include_set:
+            continue
+        results.append(p)
+
+    return [str(p) for p in results] if as_str else results
+
+def get_exe_path():
+    project_root = get_project_root()
+    exe_path = exe_path = (project_root / "a.exe").resolve()
+    if not exe_path.is_file():
+        raise FileNotFoundError(f"C++ 可执行文件不存在: {exe_path}")
+    return exe_path
+
+def process_all_files(
+    file_paths: Iterable[Union[str, Path]],
+    format: str,
+    cpp_exe: Union[str, Path],
+):
+    """
+    参数:
+        file_paths: 要处理的文件路径集合(可为 str 或 Path)。
+        format: 处理方式字符串，传给 C++ 程序。
+        cpp_exe: C++ 可执行文件路径
+        出错时是否立刻停止。
+
+    """
+    exe_path = Path(cpp_exe).resolve()
+    if not exe_path.is_file():
+        raise FileNotFoundError(f"C++ 可执行文件不存在: {exe_path}")
+
+    success = 0
+    failed_items: list[tuple[str, str]] = []
+
+    for fp in file_paths:
+        abs_path = Path(fp).resolve()
+        if not abs_path.is_file():
+            failed_items.append((str(abs_path), "目标文件不存在"))
+            continue
+        cmd = [str(exe_path), str(abs_path), format]
+        try:
+            # 期望 C++ 程序: argv[1] = 文件路径, argv[2] = format
+            completed = subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+
+                check=False
+            )
+            if completed.returncode == 0:
+                success += 1
+            else:
+                err_msg = (completed.stderr or completed.stdout or "").strip()
+                failed_items.append((str(abs_path), f"returncode={completed.returncode} msg={err_msg}"))
+
+        except Exception as e:
+            failed_items.append((str(abs_path), f"Exception: {e}"))
+
+
+
 
 #get_file_v2() 模块(python文件)在被引用时，会自动运行所有代码，导致重复执行
 # 移除自动执行，只在被主动调用时运行
