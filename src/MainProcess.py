@@ -109,6 +109,8 @@ class MainProcess:
         elif self.choice == '3':
             import Config.Config
             self.get_password()
+            from EncodeAndDecode.Decode import Decode
+            Decode()
         elif self.choice == '4':
             print("退出程序。")
             exit(0)

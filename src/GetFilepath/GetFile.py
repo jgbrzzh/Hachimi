@@ -185,12 +185,14 @@ def process_all_files(
             print(f"失败: {abs_path} - {error_msg}")
             continue
         from Config.Config import use_password, is_debug, password
+
         if(is_debug):
             print("from Config.Config import use_password, is_debug成功")
+            print(exe_path)
         if(use_password):
-            cmd = [str(abs_path), format, password]
+            cmd = [exe_path ,str(abs_path), format, password]
         else:
-            cmd = [str(abs_path), format]
+            cmd = [exe_path ,str(abs_path), format]
         try:
             # 期望 C++ 程序: argv[1] = 文件路径, argv[2] = format
             print(f"处理中: {abs_path}")

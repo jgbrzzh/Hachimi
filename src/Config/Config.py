@@ -1,7 +1,6 @@
 import inspect
 from pathlib import Path
 
-
 is_import_by_main_v2 = False  # 默认值，表示该模块未被主程序调用
 
 is_debug = False  # 默认值，表示未开启调试模式

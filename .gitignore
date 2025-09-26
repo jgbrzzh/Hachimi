@@ -1,5 +1,7 @@
 #build
 build
+
+result
 /temp
 .vs
 out
