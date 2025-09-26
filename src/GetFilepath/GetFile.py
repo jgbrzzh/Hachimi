@@ -61,8 +61,10 @@ def get_file_v2(): #获取文件路径的函数(可以根据调用方式，返�
 def check_toprocess_exists_v2():
     current_dir, project_root, toprocess_dir = get_file_v2()
     
-
-    if(is_import_by_main):#检测是否被主程序调用
+    from Config.Config import is_debug
+    from Config.Config import debug_info
+    debug_info()
+    if(is_import_by_main and is_debug):#检测是否被主程序调用
         print("当前GetFilepath模块被主程序调用，正在执行check_toprocess_exists_v2")
         """
         print(f"当前目录(即主程序所在目录): {current_dir}")

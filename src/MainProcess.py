@@ -72,8 +72,13 @@ class MainProcess:
             查看
             
             """
-            GetFilepath.GetFile.get_file_v2()
-            #GetFilepath.GetFile.check_toprocess_exists_v2()
+            import Config.Config
+            if(Config.Config.is_debug):
+                Config.Config.debug_info()
+                Config.Config.config_info()
+
+            #GetFilepath.GetFile.get_file_v2()
+            GetFilepath.GetFile.check_toprocess_exists_v2()
 
         elif self.choice == '3':
             pass
