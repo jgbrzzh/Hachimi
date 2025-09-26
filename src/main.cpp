@@ -4,6 +4,8 @@
 #include <string>
 #include <cstdlib>
 #include <cstdio>
+#include <filesystem>
+#include <direct.h>
 
 //openssl
 #include <openssl/evp.h>
@@ -21,8 +23,8 @@ int aesEncode(char* _pPassword, char* _pInput, int _InLen, char* _pOutBuf, int* 
 int aesDecode(char* _pPassword, char* _pInput, int _InLen, char* _pOutBuf, int* _pOutLen);
 
 string FileName;
-string EncodeOutFile("../temp/encode.txt");
-string DeEncodeOutFile("../temp/decode.bin");
+string EncodeOutFile("../result/encode.txt");
+string DeEncodeOutFile("../result/decode.bin");
 
 
 class hachimi {
@@ -56,9 +58,25 @@ char hachimi::pass[] = "aabbcc";
 
 int main(int argc, char* argv[])
 {
+	char   buffer[128];
+	getcwd(buffer, 128);
+	string tmp;
+	string rootFile(buffer);
+
+	while (1) {
+		size_t p = rootFile.find_last_of('\\');
+		tmp = rootFile.substr(p + 1, rootFile.size() - p - 1);
+		if (tmp._Equal("miaow"))
+			break;
+		rootFile = rootFile.substr(0, p);
+		cout << rootFile << endl;
+	}
+	EncodeOutFile = rootFile + "/result/encode.txt";
+	DeEncodeOutFile = rootFile + "/result/decode.bin";
+
 	bool ifEncode = true;//true:encode ; false:decode
-	ifEncode = false;
-#if false
+	//ifEncode = false;
+#if true
 	switch (argc)
 	{
 	case 1:
@@ -66,28 +84,34 @@ int main(int argc, char* argv[])
 		return 1;
 		break;
 	case 2://0 filepath   default:encode
+		cout << "method 2" << endl;
 		FileName = string(argv[1]);
 		break;
-	case 3://0 <encode/decode> filepath
-		FileName = string(argv[2]);
-		if (argv[1] == "encode")
-		{
-			codeFlag = 0;
+	case 3://0 filepath <encode/decode>
+		cout << "method 3" << endl;
+		FileName = string(argv[1]);
+
+		if (string(argv[2]) == string("encode")){
+			ifEncode = true;
 		}
-		else if (argv[2] == "decode")
-		{
-			codeFlag = 1;
+		else if (string(argv[2]) == string("decode")){
+			ifEncode = false;
+		}
+		else {
+			cout << "<encode/decode>" << endl;
+			return -1;
 		}
 		break;
 	default:
+		return -1;
 		break;
 	}
 #endif
 
-	if(ifEncode)
-		FileName = DeEncodeOutFile;
-	else
-		FileName = EncodeOutFile;
+	//if(ifEncode)
+	//	FileName = DeEncodeOutFile;
+	//else
+	//	FileName = EncodeOutFile;
 
 	hachimi ha(FileName, ifEncode);
 	if (ifEncode){
@@ -97,7 +121,7 @@ int main(int argc, char* argv[])
 		ha.decode();		//decode
 	}
 
-	system("pause");
+	//system("pause");
 	return 0;
 }
 
