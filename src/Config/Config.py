@@ -8,6 +8,7 @@ is_debug = False  # 默认值，表示未开启调试模式
 
 password = None
 
+use_password = False
 
 def debug_info():
     frame = inspect.currentframe().f_back
