@@ -20,7 +20,6 @@ temp
 /src/ha*
 /src/PreProcess/__pycache__
 /src/GetFile/__pycache__
-/src/x64
 /src/*.exe
 /src/temp
 
@@ -33,5 +32,3 @@ a.exe
 count_lines.py
 a.dll
 a.pdb
-*.exe
-*.exe
