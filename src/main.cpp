@@ -24,25 +24,40 @@ string FileName;
 string EncodeOutFile("../temp/encode.txt");
 string DeEncodeOutFile("../temp/decode.bin");
 
+
 class hachimi {
 private:
-	std::vector<unsigned char> msg;
+	vector<unsigned char> msg;
+	string outTXT;					//for map
+	vector<unsigned char> outBin;	//for remap
 	ifstream binContent;
 	string  InFileName;
-	
-public:
+	bool _Encode;
+
+	// aescryp
+	int _aesEncode();
+	int _aesDecode();
+	// in/out
 	int readBin();
+	int write();
+	// map/remap to/from hachimi
 	int map();
 	int remap();
-
+	
 public:
-	hachimi(string inFile);
-	std::string process();
+	static char pass[];
+	hachimi(string inFile,bool _ifEncode);
+	int encode() { _aesEncode(); map(); write(); return 0; }
+	int decode() { remap(); _aesDecode(); write(); return 0; }
 };
+
+//aes password
+char hachimi::pass[] = "aabbcc";
 
 int main(int argc, char* argv[])
 {
-	int codeFlag = 1;//0:encode 1:decode
+	bool ifEncode = true;//true:encode ; false:decode
+	ifEncode = false;
 #if false
 	switch (argc)
 	{
@@ -69,23 +84,56 @@ int main(int argc, char* argv[])
 	}
 #endif
 
-	FileName = EncodeOutFile;
+	if(ifEncode)
+		FileName = DeEncodeOutFile;
+	else
+		FileName = EncodeOutFile;
 
-	hachimi ha(FileName);
-	if (codeFlag == 0)//encode
-	{
-		ha.map();
+	hachimi ha(FileName, ifEncode);
+	if (ifEncode){
+		ha.encode();		//encode
 	}
 	else {
-		ha.remap();//decode
+		ha.decode();		//decode
 	}
 
 	system("pause");
 	return 0;
 }
 
-hachimi::hachimi(string inFile)
-	:InFileName(inFile)
+int hachimi::_aesEncode()
+{
+	unsigned char* in = new unsigned char[msg.size()];
+	unsigned char* out = new unsigned char[msg.size() + 16];
+	int outLen = msg.size() + 16;
+	copy(msg.begin(), msg.end(), in);
+	aesEncode(pass, (char*)in, msg.size(), (char*)out, &outLen);
+	msg.clear();
+	for (int i = 0;i < outLen;i++)
+	{
+		msg.push_back(out[i]);
+	}
+	return 0;
+}
+
+int hachimi::_aesDecode()
+{
+	unsigned char* in = new unsigned char[outBin.size()];
+	unsigned char* out = new unsigned char[outBin.size() + 16];
+	int inLen = outBin.size();
+	int outLen = outBin.size() + 16;
+	copy(outBin.begin(), outBin.end(), in);
+	aesDecode(pass, (char*)in, inLen, (char*)out, &outLen);
+	outBin.clear();
+	for (int i = 0;i < outLen;i++)
+	{
+		outBin.push_back(out[i]);
+	}
+	return 0;
+}
+
+hachimi::hachimi(string inFile, bool _ifEncode)
+	:InFileName(inFile), _Encode(_ifEncode)
 {
 	binContent.open(InFileName, ios::in);
 	readBin();
@@ -97,34 +145,59 @@ int hachimi::readBin()
 	char tmp;
 	while (true)
 	{
+		binContent >> tmp;
 		if (binContent.eof()){
 			break;
 		}
-		binContent >> tmp;
 		msg.push_back(tmp);
 	}
 	return 0;
 }
 
+int hachimi::write()
+{
+	int a = outBin.size();
+
+	ofstream write_out;
+	string _File;
+	if (_Encode)
+		_File = EncodeOutFile;
+	else
+		_File = DeEncodeOutFile;
+
+	write_out.open(_File,ios::trunc);
+	if (!write_out.is_open()) {
+		cerr << "file: " << _File << " cant open" << endl;
+		return -1;
+	}
+
+	if (_Encode){
+		write_out << outTXT;
+	}
+	else{
+		for (int i = 0;i < outBin.size();i++)
+		{
+			write_out << outBin[i];
+		}
+	}
+	write_out.close();
+	return 0;
+}
+
 int hachimi::map() 
 {
-	if (msg.empty())
-	{
+	if (msg.empty()){
 		std::cerr << "empty content" << std::endl;
-		return 1;
-	}
-	
-	ofstream output;
-	output.open(EncodeOutFile,ios::out | ios::trunc);
-	if (!output.is_open()) {
-		cout << "file£º" << EncodeOutFile << " cant open" << endl;
+		return -1;
 	}
 
 	char lastNum = -1;//indicate last number
-	for (int j = 0;j < msg.size() - 1;j++)
+	unsigned char a = 0, tmp = 0;
+	for (int j = 0;j < msg.size();j++)
 	{
-		unsigned char a = msg[j];
-		unsigned char tmp = 0;
+		a = msg[j];
+		cout << (int)a << " ";
+		tmp = 0;
 		lastNum = -1;
 		for (int i = 0;i < 8;i++)
 		{
@@ -134,28 +207,27 @@ int hachimi::map()
 			if (tmp == 1) {
 				if (lastNum == 1 || lastNum == -1)
 				{
-					output << "»ù";
+					outTXT.append("»ù");
 				}
 				if (lastNum == 0)
 				{
-					output << "ßä";
+					outTXT.append("ßä");
 				}
 				lastNum = 1;
 			}
 			else{
 				if (lastNum == 0)
 				{
-					output << "¹þ";
+					outTXT.append("¹þ");
 				}
 				if(i==7)
 				{
-					output << "¹þ";
+					outTXT.append("¹þ");
 				}
 				lastNum = 0;
 			}
 		} 
 	}
-	output.close();
 	return 0;
 }
 
@@ -163,48 +235,35 @@ int hachimi::remap()
 {
 	vector<unsigned char>text = msg;
 
-	ofstream out1;
-	out1.open(DeEncodeOutFile, ios::out | ios::trunc | ios::binary);
-	if (!out1.is_open()) {
-		cout << "file£º" << DeEncodeOutFile << " cant open" << endl;
-	}
-
 	string word;
 	unsigned char tt = 0, ttNum = 0;
-	for (int i = 0;i < text.size()-1;i += 2)
+	for (int i = 0;i < text.size() - 1;i += 2)
 	{
 		word.clear();
 		word += text[i];
 		word += text[i+1];
-		if (word == (string)"¹þ")
-		{
-			cout << '0';
-			tt <<= 1;
+		if (word == (string)"¹þ"){
+			tt <<= 1;				//+  0
 			ttNum++;
 		}
-		if (word == (string)"»ù")
-		{
-			cout << '1';
-			tt <<= 1;
-			tt++;
+		else if (word == (string)"»ù"){
+			++(tt <<= 1);			//+  1
 			ttNum++;
 		}
-		if (word == (string)"ßä")
-		{
-			cout << '0' << '1';
-			tt <<= 2;
-			tt++;
-			ttNum++;
-			ttNum++;
+		else if (word == (string)"ßä"){
+			++(tt <<= 2);			//+ 01
+			ttNum+=2;
 		}
-		if (ttNum == 8)
-		{
-			ttNum = 0;
-			out1 << tt;
-			tt = 0;
+		else {
+			cerr << "undecodeable file" << endl;
+			return -1;
+		}
+		
+		if (ttNum == 8){
+			outBin.push_back(tt);
+			ttNum = tt = 0;
 		}
 	}
-	out1.close();
 	return 0;
 }
 
@@ -298,7 +357,7 @@ int aesDecode(char* _pPassword, char* _pInput, int _InLen, char* _pOutBuf, int* 
 		goto clean;
 	}
 
-	if (!EVP_DecryptFinal_ex(pDe_ctx, (unsigned char*)(_pOutBuf + outlen), &flen)) {
+	if (EVP_DecryptFinal_ex(pDe_ctx, (unsigned char*)(_pOutBuf + outlen), &flen) != 1) {
 		perror("\n Error,ENCRYPT_FINAL:");
 		goto clean;
 	}
