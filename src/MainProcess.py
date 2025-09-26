@@ -88,9 +88,11 @@ class MainProcess:
             
             """
             import Config.Config
+            """
             if(Config.Config.is_debug):
                 Config.Config.debug_info()
                 Config.Config.config_info()
+            """
             self.get_password()
             from Config.Config import password
             if(Config.Config.is_debug):

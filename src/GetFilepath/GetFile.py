@@ -156,19 +156,13 @@ def get_exe_path():
         raise FileNotFoundError(f"C++ 可执行文件不存在: {exe_path}")
     return exe_path
 
-def process_all_files(
-    file_paths: Iterable[Union[str, Path]],
-    format: str,
-    cpp_exe: Union[str, Path],
-):
-    """
-    参数:
-        file_paths: 要处理的文件路径集合(可为 str 或 Path)。
-        format: 处理方式字符串，传给 C++ 程序。
-        cpp_exe: C++ 可执行文件路径
-        出错时是否立刻停止。
 
-    """
+def process_all_files(
+        file_paths: Iterable[Union[str, Path]],
+        format: str,
+        cpp_exe: Union[str, Path],
+):
+
     exe_path = Path(cpp_exe).resolve()
     if not exe_path.is_file():
         raise FileNotFoundError(f"C++ 可执行文件不存在: {exe_path}")
@@ -179,27 +173,39 @@ def process_all_files(
     for fp in file_paths:
         abs_path = Path(fp).resolve()
         if not abs_path.is_file():
-            failed_items.append((str(abs_path), "目标文件不存在"))
+            error_msg = "目标文件不存在"
+            failed_items.append((str(abs_path), error_msg))
+            print(f"失败: {abs_path} - {error_msg}")
             continue
+
         cmd = [str(exe_path), str(abs_path), format]
         try:
             # 期望 C++ 程序: argv[1] = 文件路径, argv[2] = format
+            print(f"处理中: {abs_path}")
             completed = subprocess.run(
                 cmd,
                 capture_output=True,
                 text=True,
-
                 check=False
             )
             if completed.returncode == 0:
                 success += 1
+                print(f"成功: {abs_path}")
             else:
                 err_msg = (completed.stderr or completed.stdout or "").strip()
-                failed_items.append((str(abs_path), f"returncode={completed.returncode} msg={err_msg}"))
+                error_info = f"returncode={completed.returncode} msg={err_msg}"
+                failed_items.append((str(abs_path), error_info))
+                print(f"失败: {abs_path} - {error_info}")
 
         except Exception as e:
-            failed_items.append((str(abs_path), f"Exception: {e}"))
+            error_info = f"Exception: {e}"
+            failed_items.append((str(abs_path), error_info))
+            print(f"异常: {abs_path} - {error_info}")
 
+    # 输出最终统计信息
+    print(f"\n处理完成: 成功 {success} 个，失败 {len(failed_items)} 个")
+
+    return failed_items
 
 
 
