@@ -1,455 +1,609 @@
-# 哈吉咪加密解密器 (Hachimi Crypto)
+# Hachimi 文件编码工具
 
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![Python](https://img.shields.io/badge/python-3.6%2B-blue.svg)
-![C++](https://img.shields.io/badge/c%2B%2B-11%2B-blue.svg)
-![Status](https://img.shields.io/badge/status-开发中-yellow.svg)
+Hachimi 是一个创新的文件编码与加密工具，它将任意文件内容转换为独特的中文字符序列（哈、基、米等）。该项目采用混合架构：使用 C++ 实现高性能的 AES-256-CBC 加密和字符映射核心，配合 Python 提供友好的交互界面和批量处理功能。
 
-一个创新的文件加密工具，使用中文字符（哈、基、米）作为编码方式，实现独特的数据保护方案。
+## 核心特性
 
-> 🚧 **项目状态**: 正在开发中，已实现核心加密算法和文件预处理功能。
+- 🔐 **安全加密**：采用 AES-256-CBC 加密算法保护文件内容
+- 🀄 **中文编码**：将二进制数据映射为"哈基米"等中文字符，独特且易识别
+- 🚀 **高效处理**：C++ 核心引擎，支持各种文件类型的快速编解码
+- 📁 **批量操作**：Python 界面支持整个目录的批量处理
+- 🔧 **模块化设计**：清晰的模块分离，易于维护和扩展
 
-## ✨ 项目概述
+> ℹ️ 当前版本为实验性质，主要功能已完善，但在跨平台兼容性和密码系统集成方面仍有优化空间。himi 文件编码工具
 
-哈吉咪加密器是一个独特的加密工具，它将二进制数据转换为中文字符序列：
-- **哈** (ha) 表示 `0`
-- **基** (ji) 表示 `1` 
-- **米** (mi) 表示 `01`
+Hachimi 是一个实验性的文件编码工具链，它通过 C++ 实现的核心程序将文件内容映射为“哈 / 基 / 米”字符序列，并辅以 Python 编排脚本完成批量处理与目录管理。Python 端负责收集待处理文件、调度 `ha.exe` 可执行程序并落盘结果，C++ 端同时承担 AES-256-CBC 加密与字符映射。
 
-这种编码方式让加密后的数据看起来像是无意义的中文字符串，提供了一种新颖的数据隐写方法。
+> ℹ️ 当前仓库处于探索与重构阶段，流程已经贯通，但仍存在若干工程化与跨平台方面的待办事项，详见文末的“已知限制”与“后续工作建议”。
 
-## 🌟 核心功能
+## 项目概览
 
-- **二进制转哈吉咪编码**：将任意文件转换为中文字符序列
-- **哈吉咪解码还原**：将中文字符序列还原为原始二进制文件
-- **文件预处理**：自动检测文件编码并转换为UTF-8
-- **十六进制转换**：支持二进制与十六进制文本的互转
-- **批量处理**：支持文件夹递归处理
+### 工作原理
+1. **输入处理**：将任意文件放入 `Toprocess/` 目录
+2. **加密编码**：使用 AES-256-CBC 算法加密文件内容，然后映射为中文字符
+3. **字符映射规则**：
+   - `哈` 代表二进制位 `0`
+   - `基` 代表二进制位 `1`  
+   - `米` 代表二进制位序列 `01`
+4. **输出结果**：编码结果保存为 `.txt` 文件，解码结果恢复为 `.bin` 文件
 
-## 🚀 快速开始
+### 技术架构
 
-### 环境要求
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    Python 交互层                           │
+│  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐ │
+│  │   MainProcess   │  │ EncodeAndDecode │  │   GetFilepath   │ │
+│  │   (交互菜单)    │  │   (批量调度)   │  │   (路径管理)   │ │
+│  └─────────────────┘  └─────────────────┘  └─────────────────┘ │
+└─────────────────────────────────┬───────────────────────────────┘
+                                  │ subprocess 调用
+┌─────────────────────────────────▼───────────────────────────────┐
+│                      C++ 核心引擎                              │
+│  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐ │
+│  │  AES-256-CBC    │  │   字符映射      │  │   文件 I/O      │ │
+│  │     加密        │  │ (哈基米编码)   │  │     处理        │ │
+│  └─────────────────┘  └─────────────────┘  └─────────────────┘ │
+└─────────────────────────────────────────────────────────────────┘
+                                  │
+                  ┌───────────────▼───────────────┐
+                  │      result/ 目录输出        │
+                  │  encode.txt │ decode.bin     │
+                  └───────────────────────────────┘
+```
 
-- **Python 3.6+** (推荐 3.8+)
-- **C++ 编译器** (用于编译main.cpp)
-  - Windows: Visual Studio 或 MinGW-w64
-  - Linux: GCC
-  - macOS: Xcode
+## 功能特性
 
-### 安装依赖
+### ✅ 已实现功能
+- **交互式界面**：`src/MainProcess.py` 提供用户友好的命令行菜单
+- **批量处理**：自动遍历 `Toprocess/` 目录，支持子目录递归处理
+- **双向转换**：支持文件编码（明文→哈基米文本）和解码（哈基米文本→原始文件）
+- **加密保护**：集成 AES-256-CBC 加密算法，确保数据安全
+- **工具集**：包含十六进制转换、路径管理等实用工具
+- **调试支持**：完整的调试和测试脚本，便于问题排查
 
-```bash
-# 克隆项目
+### 🧪 实验性功能
+- **编码预处理**：`PreProcess/FilePreProcess.py` 支持字符编码检测和 UTF-8 转换（已标记弃用）
+- **装饰器工具**：提供打印装饰器和计时装饰器用于调试
+
+### 🚧 开发中功能
+- **密码集成**：Python 端密码输入尚未与 C++ 核心完全联动
+- **输出定制**：当前输出文件名固定，批量处理时会相互覆盖
+- **跨平台支持**：需要适配 Linux/macOS 环境
+
+## 项目结构
+
+```
+Hachimi/
+├── 📄 README.md               # 项目说明文档
+├── 🔧 ha.exe                  # C++ 编译的核心可执行文件
+├── 📚 ha.pdb                  # 调试符号文件
+├── 🔗 libcrypto-3-x64.dll    # OpenSSL 运行时依赖库
+├── 🚀 tragger.py              # 快速启动脚本
+│
+├── 📁 src/                    # 源代码目录
+│   ├── 🐍 MainProcess.py      # 主程序入口和交互菜单
+│   ├── ⚙️ main.cpp            # C++ 核心实现（AES加密+字符映射）
+│   │
+│   ├── 📁 Config/             # 配置管理模块
+│   │   └── Config.py          # 全局配置、调试开关、密码管理
+│   │
+│   ├── 📁 EncodeAndDecode/    # 编解码调度模块
+│   │   ├── Encode.py          # 编码流程控制
+│   │   └── Decode.py          # 解码流程控制
+│   │
+│   ├── 📁 GetFilepath/        # 文件路径管理模块
+│   │   └── GetFile.py         # 路径解析、文件搜索、批量处理
+│   │
+│   ├── 📁 HexConvert/         # 十六进制转换工具
+│   │   └── HexConverter.py    # 二进制 ↔ 十六进制转换
+│   │
+│   ├── 📁 HexToHachimi/       # 字符映射定义
+│   │   └── HexToHachimi.py    # 哈基米字符集定义
+│   │
+│   ├── 📁 PreProcess/         # 文件预处理模块（已弃用）
+│   │   ├── FilePreProcess.py  # 编码检测和转换
+│   │   └── FilePreProcessRunner.py
+│   │
+│   └── 📁 Decorator/          # 装饰器工具
+│       └── Decorator.py       # 打印和计时装饰器
+│
+├── 📁 Toprocess/              # 输入文件目录
+│   └── encode.txt             # 示例待处理文件
+│
+├── 📁 result/                 # 输出结果目录
+│   ├── encode.txt             # 编码输出（哈基米格式）
+│   └── decode.bin             # 解码输出（恢复的原始文件）
+│
+├── 📁 x64/                    # 编译产物目录
+│   ├── Debug/                 # 调试版本
+│   └── Release/               # 发布版本
+│
+└── 📁 测试和调试脚本
+    ├── test_debug_sync.py     # 模块导入问题复现
+    ├── test_debug_sync_fixed.py # 修复后的导入测试
+    └── debug_import.py        # 导入路径分析工具
+```
+
+## 环境要求
+
+### 系统要求
+| 项目 | 要求 | 说明 |
+|------|------|------|
+| **操作系统** | Windows 10/11 (64位) | 预编译版本仅支持 Windows；源码可移植 |
+| **Python** | 3.10+ | 核心功能仅需标准库 |
+| **内存** | 1GB+ | 处理大文件时需要更多内存 |
+
+### 运行时依赖
+- **OpenSSL**：`libcrypto-3-x64.dll` 已包含在项目中
+- **Visual C++ 运行时**：Windows 系统通常已包含
+
+### 可选依赖
+- **chardet** (Python 包)：仅在使用已弃用的预处理功能时需要
+  ```powershell
+  pip install chardet
+  ```
+
+### 开发环境 (可选)
+如需重新编译 C++ 源码：
+- **编译器**：MSVC 2019+、MinGW-w64 或支持 C++17 的编译器
+- **OpenSSL 开发库**：头文件和链接库
+- **CMake** (可选)：用于跨平台构建
+
+## 快速开始
+
+### 1. 获取项目
+```powershell
 git clone https://github.com/jgbrzzh/Hachimi.git
 cd Hachimi
-
-# 安装Python依赖
-pip install -r requirements.txt
 ```
 
-### 编译C++程序
+### 2. 准备输入文件
+将需要处理的文件放入 `Toprocess/` 目录：
+```powershell
+# 创建示例文件
+echo "Hello, Hachimi!" > Toprocess/test.txt
 
-```bash
-# 进入src目录
+# 或复制现有文件
+copy "C:\path\to\your\file.txt" Toprocess/
+```
+
+### 3. 运行程序
+使用便捷启动脚本：
+```powershell
+python tragger.py
+```
+
+或手动启动：
+```powershell
 cd src
-
-# 编译main.cpp
-g++ -o main main.cpp
-
-# 或在Windows上使用
-# cl main.cpp /Fe:main.exe
+python MainProcess.py
 ```
 
-### 使用方法
-
-#### 1. 图形化菜单方式（推荐）
-
-```bash
-# 运行主程序
-python src/MainProcess.py
+### 4. 选择操作
+程序会显示交互菜单：
 ```
-
-程序会显示菜单：
-```
+开始运行前请将要处理的文件放入ToProcess文件夹中，处理完成的文件会保存在Result文件夹中。
 请选择要进行的操作:
 1. 预处理文件 (转换为UTF-8编码)(已弃用)
 2. 加密
 3. 解密
 4. 退出
+输入选项编号 (1-4):
 ```
 
-#### 2. 文件预处理
+- **选择 2 (加密)**：将文件加密并转换为哈基米格式，保存为 `result/encode.txt`
+- **选择 3 (解密)**：将哈基米格式解密还原，保存为 `result/decode.bin`
 
-```python
-# 处理ToProcess文件夹中的文件
-from src.PreProcess.FilePreProcess import main_FileProProcess
-main_FileProProcess()
+### 5. 查看结果
+处理完成后，结果文件位于 `result/` 目录：
+- `encode.txt`：编码后的哈基米格式文本
+- `decode.bin`：解码恢复的原始文件
 
-# 功能：
-# - 自动检测文件编码
-# - 转换为UTF-8编码
-# - 保存到temp文件夹中
+## 使用示例
+
+### 编码示例
+假设我们要加密一个包含 "Hello World" 的文本文件：
+
+1. 创建输入文件：
+   ```powershell
+   echo "Hello World" > Toprocess/hello.txt
+   ```
+
+2. 运行程序并选择加密：
+   ```powershell
+   python tragger.py
+   # 选择选项 2
+   ```
+
+3. 查看编码结果：
+   ```powershell
+   type result\encode.txt
+   ```
+   输出类似：`哈基米哈哈基基米哈米基...`
+
+### 解码示例
+将上面的哈基米格式文本解码回原始内容：
+
+1. 确保 `Toprocess/` 中包含已编码的文件
+2. 运行程序并选择解密：
+   ```powershell
+   python tragger.py
+   # 选择选项 3
+   ```
+3. 查看解码结果：
+   ```powershell
+   type result\decode.bin
+   ```
+   输出：`Hello World`
+
+### 直接调用 C++ 程序
+也可以直接使用命令行调用核心程序：
+
+```powershell
+# 编码
+.\ha.exe "Toprocess\input.txt" encode
+
+# 解码  
+.\ha.exe "Toprocess\encoded.txt" decode
 ```
 
-#### 3. C++命令行方式
+> **注意**：直接调用时使用硬编码密码 "aabbcc"，输出文件路径固定为 `result/encode.txt` 和 `result/decode.bin`
 
-```bash
-# 编码文件
-./main encode input_file
-
-# 解码文件
-./main decode hachimi_file
-```
-
-#### 4. 十六进制转换
-
-```python
-from src.HexConvert.HexConverter import bin_to_hex, hex_to_bin
-
-# 二进制文件转十六进制文本
-bin_to_hex("input.bin", "output.hex")
-
-# 十六进制文本转二进制文件
-hex_to_bin("input.hex", "output.bin")
-```
-
-## 📖 核心算法说明
-
-### 哈吉咪编码原理
-
-哈吉咪编码将二进制数据映射为中文字符：
-
-```
-二进制位 -> 哈吉咪字符
-0        -> 哈
-1        -> 基  
-01       -> 米
-```
-
-### 编码流程
-
-1. **读取二进制文件**：按字节读取原始文件
-2. **位级处理**：遍历每个字节的每一位
-3. **字符映射**：根据位模式输出对应中文字符
-4. **优化组合**：连续的`01`模式优化为单个`米`字符
-
-### 解码流程
-
-1. **读取哈吉咪文件**：按中文字符读取
-2. **字符解析**：将中文字符还原为二进制位
-3. **位重组**：将位序列重新组合为字节
-4. **文件重建**：输出原始二进制文件
-
-## 📚 模块说明
+## 模块详解
 
 ### 核心模块
 
-- **`src/main.cpp`**: C++实现的核心加密解密算法
-- **`src/MainProcess.py`**: Python主程序，提供交互式菜单
-- **`src/PreProcess/`**: 文件预处理模块，处理编码转换
-- **`src/HexConvert/`**: 十六进制转换工具
-- **`src/HexToHachimi/`**: 哈吉咪字符映射定义
+#### MainProcess.py - 主程序入口
+- **功能**：提供交互式命令行界面，协调各模块工作
+- **特性**：
+  - 循环菜单设计，支持多次操作
+  - 密码管理和配置初始化
+  - 模块导入路径管理和调试支持
 
-### 功能模块详解
+#### main.cpp - C++ 核心引擎
+- **功能**：实现 AES 加密和哈基米字符映射
+- **核心类**：`hachimi` 类封装所有操作
+- **算法实现**：
+  - AES-256-CBC 加密/解密
+  - 自定义二进制到中文字符的映射
+  - 自动项目路径定位
 
-#### FilePreProcess 文件预处理
-```python
-# 主要功能
-- get_filepath(): 获取项目路径结构
-- convert_to_utf8(): 转换文件编码为UTF-8
-- detect_file_encoding(): 自动检测文件编码
-```
+### 功能模块
 
-#### HexConverter 十六进制转换
-```python
-# 主要功能  
-- bin_to_hex(): 二进制文件转十六进制文本
-- hex_to_bin(): 十六进制文本转二进制文件
-# 输出格式: 每行16字节，空格分隔，大写十六进制
-```
+#### Config/ - 配置管理
+- **Config.py**：全局配置中心
+  - `is_debug`：调试模式开关
+  - `password`：加密密码存储
+  - `is_import_by_main_v2`：模块调用来源标记
 
-#### MainProcess 主控制器
-```python
-# 提供功能菜单
-1. 文件预处理 (UTF-8转换)
-2. 加密功能 (开发中)
-3. 解密功能 (开发中)  
-4. 退出程序
-```
+#### EncodeAndDecode/ - 编解码调度
+- **Encode.py** & **Decode.py**：
+  - 文件存在性检查
+  - 批量文件收集
+  - C++ 程序调用封装
 
-## 🏗️ 项目结构
+#### GetFilepath/ - 文件路径管理
+- **GetFile.py**：核心路径操作模块
+  - 项目根目录自动定位
+  - 递归文件搜索
+  - 批量 subprocess 调度
+  - 详细的错误处理和统计
 
-```
-Hachimi/
-├── src/                          # 源代码目录
-│   ├── main.cpp                  # C++核心加密解密程序
-│   ├── main.exe                  # 编译后的可执行文件
-│   ├── MainProcess.py            # Python主控制程序
-│   ├── __init__.py               # Python包初始化
-│   ├── PreProcess/               # 文件预处理模块
-│   │   ├── FilePreProcess.py     # 核心预处理逻辑
-│   │   ├── FilePreProcessRunner.py # 预处理运行器
-│   │   └── __init__.py
-│   ├── HexConvert/               # 十六进制转换模块
-│   │   ├── HexConverter.py       # 二进制↔十六进制转换
-│   │   └── __init__.py
-│   ├── HexToHachimi/             # 哈吉咪字符映射
-│   │   ├── HexToHachimi.py       # 字符映射定义
-│   │   └── __init__.py
-│   ├── EncodeAndDecode/          # 编码解码模块(开发中)
-│   │   ├── Encode.py             # 编码功能
-│   │   ├── Decode.py             # 解码功能
-│   │   └── __init__.py
-│   ├── GetFilepath/              # 路径获取工具
-│   │   ├── GetFile.py            # 文件路径处理
-│   │   └── __init__.py
-│   └── temp/                     # 临时文件目录
-├── ToProcess/                    # 待处理文件目录
-│   └── test.txt                  # 测试文件示例
-├── temp/                         # 输出文件目录
-│   ├── test.txt                  # 预处理后的文件
-│   ├── hachimi.txt               # 哈吉咪编码输出
-│   ├── out1.bin                  # 二进制输出文件
-│   └── out1 - 副本.bin           # 备份文件
-├── requirements.txt              # Python依赖包
-├── requirements-dev.txt          # 开发环境依赖
-├── .gitignore                    # Git忽略文件配置
-└── README.md                     # 项目说明文档
-```
+### 工具模块
 
-## 🔧 开发指南
+#### HexConvert/ - 十六进制工具
+- **HexConverter.py**：二进制与十六进制互转
+  - 支持大文件流式处理
+  - 标准化的十六进制格式输出
+  - 错误检测和验证
 
-### 完整开发流程
+#### Decorator/ - 装饰器工具
+- **Decorator.py**：调试和性能分析
+  - `print_decorator`：信息打印装饰器
+  - `time_decorator`：函数执行时间测量
 
-1. **环境准备**
-```bash
-# 克隆项目
-git clone https://github.com/jgbrzzh/Hachimi.git
-cd Hachimi
+### 实验性模块
 
-# 安装Python依赖
-pip install -r requirements.txt
+#### PreProcess/ - 文件预处理（已弃用）
+- **FilePreProcess.py**：字符编码检测和转换
+- **FilePreProcessRunner.py**：预处理流程控制
+- 注：已被更高效的直接处理方式替代
 
-# 安装开发依赖（可选）
-pip install -r requirements-dev.txt
-```
+#### HexToHachimi/ - 字符映射定义
+- **HexToHachimi.py**：定义哈基米字符集
+- 扩展字符集：`["哈","基","米","南","北","绿","豆","阿","西","噶","曼","波","压","库","鲁","欧"]`
 
-2. **编译C++程序**
-```bash
+## 开发和构建
+
+### 重新编译 C++ 核心
+
+项目已包含预编译的 Windows 版本，如需自定义构建：
+
+#### Windows (MSVC)
+1. 安装 OpenSSL 开发库：
+   ```powershell
+   # 使用 vcpkg
+   vcpkg install openssl:x64-windows
+   ```
+
+2. 编译：
+   ```powershell
+   cd src
+   cl /std:c++17 /EHsc main.cpp /I"path\to\openssl\include" /link /LIBPATH:"path\to\openssl\lib" libcrypto.lib libssl.lib /OUT:"..\ha.exe"
+   ```
+
+#### Windows (MinGW-w64)
+```powershell
 cd src
-g++ -o main main.cpp
-
-# Windows用户可以使用
-# cl main.cpp /Fe:main.exe
+g++ -std=c++17 main.cpp -lcrypto -lssl -o ../ha.exe
 ```
 
-3. **运行程序**
-```bash
-# 方式1: 使用Python主程序（推荐）
-python src/MainProcess.py
+#### Linux/macOS (实验性)
+当前源码使用了 Windows 特定的 API，需要适配：
+1. 替换 `<direct.h>` 为 `<unistd.h>`
+2. 修改路径分隔符和路径探测逻辑
+3. 编译：
+   ```bash
+   g++ -std=c++17 main.cpp -lcrypto -lssl -o ha
+   ```
 
-# 方式2: 直接使用C++程序
-cd src
-./main encode ../ToProcess/test.txt    # 编码
-./main decode ../temp/hachimi.txt      # 解码
+### 项目开发指南
+
+#### 添加新的编码格式
+1. 在 `HexToHachimi/HexToHachimi.py` 中扩展字符集
+2. 修改 `main.cpp` 中的 `map()` 和 `remap()` 函数
+3. 更新字符映射逻辑
+
+#### 调试技巧
+- 使用 `Config.Config.change_debug(True)` 启用详细日志
+- 运行测试脚本验证模块导入：
+  ```powershell
+  python test_debug_sync_fixed.py
+  python debug_import.py
+  ```
+
+#### 性能优化建议
+- 对于大文件，考虑实现流式处理
+- 添加并行处理支持
+- 优化内存使用模式
+
+## 测试和验证
+
+### 自动化测试脚本
+
+项目包含多个测试脚本用于验证功能和排查问题：
+
+#### 模块导入测试
+```powershell
+# 验证修复后的模块导入同步
+python test_debug_sync_fixed.py
+
+# 复现历史导入问题（用于理解）
+python test_debug_sync.py
+
+# 分析导入路径和模块对象
+python debug_import.py
 ```
 
-### 工作流程
+#### 功能验证测试
+1. **基本编码测试**：
+   ```powershell
+   echo "Test message" > Toprocess/test.txt
+   python tragger.py  # 选择编码
+   ```
 
-#### 典型使用场景
-1. **将文件放入ToProcess文件夹**
-2. **运行MainProcess.py选择预处理**（转换编码）
-3. **选择加密功能**（将文件转换为哈吉咪编码）
-4. **需要时选择解密功能**（从哈吉咪编码还原文件）
+2. **解码验证测试**：
+   ```powershell
+   # 使用上一步的输出进行解码
+   python tragger.py  # 选择解码
+   diff Toprocess/test.txt result/decode.bin
+   ```
 
-#### 文件处理链
+3. **直接调用测试**：
+   ```powershell
+   .\ha.exe "Toprocess\test.txt" encode
+   .\ha.exe "result\encode.txt" decode
+   ```
+
+### 常见问题排查
+
+#### 模块导入问题
+- **症状**：`ModuleNotFoundError` 或配置同步失败
+- **解决**：确保从正确目录启动，使用 `tragger.py`
+
+#### 文件处理错误
+- **症状**：处理失败或输出文件损坏
+- **检查**：
+  - 输入文件是否存在且可读
+  - `libcrypto-3-x64.dll` 是否在正确位置
+  - 磁盘空间是否充足
+
+#### 字符编码问题
+- **症状**：哈基米字符显示异常
+- **解决**：确保终端支持 UTF-8 编码
+
+## 技术实现细节
+
+### 加密算法
+- **算法**：AES-256-CBC
+- **密钥生成**：使用 EVP_BytesToKey 基于密码生成密钥和 IV
+- **填充**：PKCS#7 自动填充
+
+### 字符映射规则
+基于二进制位到中文字符的映射：
+- `0` → `哈`
+- `1` → `基`  
+- `01` → `米`
+
+映射算法在 C++ 中实现了状态机，根据前一位的值决定当前字符输出。
+
+### 文件处理流程
+1. **读取**：使用文本模式读取（注意：不适合包含空字节的二进制文件）
+2. **加密**：AES-256-CBC 加密
+3. **映射**：按位映射为中文字符
+4. **输出**：写入固定路径的文本文件
+
+### 安全考虑
+- 默认密码硬编码为 "aabbcc"（开发用途）
+- 生产环境应修改密码系统
+- 当前无额外的完整性校验
+
+### 性能特征
+- 内存使用：将整个文件加载到内存
+- 处理速度：受 AES 加密和字符串操作影响
+- 适用场景：中小型文件（< 100MB）
+
+## 已知限制和注意事项
+
+### 文件处理限制
+- **二进制文件**：当前使用文本模式读取，无法正确处理包含空字节的二进制文件
+- **文件大小**：整个文件加载到内存，大文件可能导致内存不足
+- **输出覆盖**：批量处理时输出文件会被覆盖，需要及时备份结果
+
+### 系统兼容性
+- **平台依赖**：C++ 源码使用 Windows 特定 API，跨平台需要适配
+- **运行时依赖**：需要 OpenSSL 动态库支持
+- **字符编码**：终端需要支持 UTF-8 显示中文字符
+
+### 安全性考虑
+- **固定密码**：C++ 核心使用硬编码密码 "aabbcc"
+- **密码传递**：Python 端密码输入尚未与 C++ 核心联动
+- **完整性校验**：缺少文件完整性验证机制
+
+### 功能限制
+- **预处理模块**：已弃用，需要额外安装 `chardet` 依赖
+- **并发处理**：当前为串行处理，未实现并行化
+- **错误恢复**：处理失败时缺少自动恢复机制
+
+## 发展路线图
+
+### 短期目标 (v2.0)
+- [ ] 实现 Python-C++ 密码传递机制
+- [ ] 支持自定义输出文件名和路径
+- [ ] 添加二进制文件正确处理支持
+- [ ] 完善错误处理和用户反馈
+
+### 中期目标 (v3.0)  
+- [ ] 跨平台支持 (Linux/macOS)
+- [ ] 流式处理大文件支持
+- [ ] 并行处理多文件
+- [ ] GUI 图形界面开发
+
+### 长期目标 (v4.0+)
+- [ ] 多种加密算法支持
+- [ ] 网络传输和 API 接口
+- [ ] 插件化架构设计
+- [ ] 完整的单元测试覆盖
+
+## 贡献指南
+
+我们欢迎各种形式的贡献，包括但不限于：
+
+### 如何贡献
+
+1. **Fork 项目**：点击右上角的 Fork 按钮
+2. **创建分支**：
+   ```powershell
+   git checkout -b feature/your-awesome-feature
+   ```
+3. **提交更改**：
+   ```powershell
+   git add .
+   git commit -m "Add: 描述您的更改"
+   ```
+4. **推送分支**：
+   ```powershell
+   git push origin feature/your-awesome-feature
+   ```
+5. **创建 Pull Request**：在 GitHub 上提交 PR
+
+### 贡献类型
+
+#### 🐛 Bug 修复
+- 修复现有功能的问题
+- 改进错误处理机制
+- 提升程序稳定性
+
+#### ✨ 新功能
+- 添加新的编码算法支持
+- 实现跨平台兼容性
+- 开发图形用户界面
+
+#### 📚 文档改进
+- 完善 README 文档
+- 添加代码注释
+- 编写用户教程
+
+#### 🧪 测试增强
+- 编写单元测试
+- 添加集成测试
+- 性能基准测试
+
+### 开发规范
+
+#### 代码风格
+- **Python**：遵循 PEP 8 规范
+- **C++**：使用现有的代码风格，注意缩进和命名
+- **注释**：重要功能需要添加中文注释
+
+#### 提交信息格式
 ```
-原始文件 (ToProcess/) 
-    ↓ 预处理
-UTF-8文件 (temp/)
-    ↓ 哈吉咪编码
-哈吉咪文本 (temp/hachimi.txt)
-    ↓ 哈吉咪解码  
-原始二进制文件 (temp/out1.bin)
-```
+类型: 简短描述
 
-### 代码结构说明
+详细说明（可选）
 
-#### C++核心算法 (main.cpp)
-- **hachimi类**: 核心编码解码逻辑
-- **readBin()**: 读取二进制文件
-- **map()**: 二进制到哈吉咪字符映射
-- **remap()**: 哈吉咪字符到二进制还原
-
-#### Python控制层
-- **MainProcess.py**: 交互式菜单系统
-- **FilePreProcess.py**: 文件编码预处理
-- **HexConverter.py**: 十六进制格式转换
-
-### 扩展字符集
-
-除了基础的哈、基、米三字符外，项目还定义了扩展字符集：
-```python
-HachimiList = ["哈","基","米","南","北","绿","豆","阿","西","噶","曼","波","压","库","鲁","欧"]
-```
-这为未来的16进制直接映射提供了基础
-    ↓ 返回结果
-Python 接口 ← ← ← ← ← ← ← ← ← ←
-```
-
-#### 💡 实现原理
-1. **C++核心**: 实现高性能的加密解密算法
-2. **pybind11绑定**: 将C++类和函数暴露给Python
-3. **Python封装**: 提供用户友好的API和错误处理
-4. **自动编译**: setup.py自动编译C++代码为Python扩展模块
-
-#### 🚀 性能优势
-- **零拷贝**: 数据在Python和C++之间高效传递
-- **类型安全**: pybind11提供类型检查和自动转换
-- **内存管理**: 自动处理Python/C++内存生命周期
-- **异常处理**: C++异常自动转换为Python异常
-
-### 性能优化
-
-- C++核心算法采用SIMD指令集优化
-- 支持多线程并行处理大文件
-- 内存池管理减少动态分配开销
-- 智能缓存和预加载机制
-
-## 🛡️ 技术特点
-
-### 独特的编码方案
-- **视觉隐藏**: 加密后的文件看起来像中文文本，具有良好的伪装性
-- **文化特色**: 使用中文字符作为编码基础，体现中文编程的创新
-- **可扩展性**: 支持从3字符基础集扩展到16字符完整集
-
-### 安全考量
-- **编码混淆**: 二进制数据转换为看似无意义的中文字符
-- **文件伪装**: 加密文件可以伪装成普通的中文文本文件
-- **自定义协议**: 非标准编码方式增加逆向工程难度
-
-⚠️ **使用提醒**: 
-- 本工具主要用于学习和研究目的
-- 哈吉咪编码文件需要专用程序才能解码
-- 请妥善保管编码后的文件和解码程序
-
-## 📊 测试结果
-
-### 编码效率
-| 原始文件类型 | 文件大小 | 编码后大小 | 压缩比 |
-|-------------|----------|------------|--------|
-| 文本文件 | 1KB | ~2.4KB | 1:2.4 |
-| 二进制文件 | 1MB | ~2.4MB | 1:2.4 |
-| 图片文件 | 5MB | ~12MB | 1:2.4 |
-
-*注：哈吉咪编码会显著增加文件大小，因为每个二进制位都对应中文字符*
-
-### 处理速度
-- **小文件 (<1MB)**: 几乎瞬时完成
-- **中等文件 (1-100MB)**: 通常在几秒内完成
-- **大文件 (>100MB)**: 处理时间与文件大小成正比
-
-## 🤝 贡献指南
-
-### 欢迎贡献
-1. **报告Bug**: 在Issues中描述问题和复现步骤
-2. **功能建议**: 提出新功能或改进建议
-3. **代码贡献**: Fork项目，提交Pull Request
-4. **文档改进**: 帮助完善项目文档
-
-### 开发流程
-1. Fork 项目仓库
-2. 创建功能分支 (`git checkout -b feature/new-feature`)
-3. 编写代码并测试
-4. 提交更改 (`git commit -m 'Add: 新功能描述'`)
-5. 推送到分支 (`git push origin feature/new-feature`)
-6. 创建 Pull Request
-
-### 代码规范
-- **Python**: 遵循 PEP 8 代码规范
-- **C++**: 使用现代C++特性，注重代码可读性
-- **注释**: 关键算法和复杂逻辑需要详细注释
-- **测试**: 新功能需要配套测试用例
-
-## 📝 版本历史
-
-### v0.1.0 (2025-09-23) - 初始版本
-- ✨ **核心功能实现**: C++版本的哈吉咪编码解码算法
-- � **Python集成**: MainProcess.py提供交互式操作界面
-- 📁 **文件预处理**: 自动检测和转换文件编码为UTF-8
-- � **工具链完善**: 十六进制转换、路径处理等辅助功能
-- 📚 **项目文档**: 完整的README和代码注释
-- 🧪 **测试验证**: 基本功能测试和示例文件
-
-### 开发中功能
-- � **加密解密菜单**: MainProcess.py中的选项2、3功能
-- � **EncodeAndDecode模块**: Python版本的编码解码实现
-- 🎯 **16字符扩展**: 基于HachimiList的完整字符映射
-- � **性能优化**: 大文件处理的内存和速度优化
-
-## 📄 许可证
-
-本项目采用 MIT 许可证 - 详见 [LICENSE](LICENSE) 文件。
-
-## 👨‍💻 作者
-
-- **jgbrzzh** - 项目创建者和维护者
-
-## 🙏 致谢
-
-- 感谢所有为开源加密算法做出贡献的开发者
-- 特别感谢 Python 和 C++ 社区的支持
-
-## 📮 联系方式
-
-如有问题或建议，请通过以下方式联系：
-
-- 提交 [Issue](https://github.com/jgbrzzh/Hachimi/issues)
-- 发送邮件至项目维护者
-
-## 🎯 快速参考
-
-### 常用操作
-```bash
-# 1. 运行主程序（推荐）
-python src/MainProcess.py
-
-# 2. 直接编译运行C++程序
-cd src
-g++ -o main main.cpp
-./main encode ../ToProcess/test.txt
-
-# 3. 文件预处理
-python -c "from src.PreProcess.FilePreProcess import main_FileProProcess; main_FileProProcess()"
-
-# 4. 十六进制转换
-python -c "from src.HexConvert.HexConverter import bin_to_hex; bin_to_hex('input.bin', 'output.hex')"
+相关 Issue: #123
 ```
 
-### 核心流程
-```python
-# 完整的文件处理流程示例
-from src.PreProcess.FilePreProcess import main_FileProProcess
-from src.HexConvert.HexConverter import bin_to_hex, hex_to_bin
+类型示例：
+- `Fix`: 修复问题
+- `Add`: 添加功能
+- `Update`: 更新现有功能
+- `Docs`: 文档更新
 
-# 1. 预处理文件（编码转换）
-main_FileProProcess()
+### 测试要求
+在提交 PR 前，请确保：
+- [ ] 新功能有对应的测试用例
+- [ ] 现有测试仍然通过
+- [ ] 在 Windows 环境下验证功能正常
 
-# 2. 二进制转十六进制（可选）
-bin_to_hex("temp/test.txt", "temp/test.hex")
+### 获得帮助
+- 提交 Issue 描述问题或建议
+- 在 Discussion 中与社区交流
+- 联系维护者获得技术支持
 
-# 3. 使用C++程序进行哈吉咪编码
-# cd src && ./main encode ../temp/test.txt
-```
+## 许可证
 
-### 项目文件说明
-- **ToProcess/**: 放入待处理的原始文件
-- **temp/**: 预处理和编码结果输出目录
-- **src/main.cpp**: 核心哈吉咪编码算法
-- **src/MainProcess.py**: 交互式主程序入口
+该项目目前未包含显式的许可证文件。在贡献代码前，请联系项目维护者确认授权政策。
+
+建议未来添加适当的开源许可证，如 MIT 或 Apache 2.0。
+
+## 致谢
+
+- OpenSSL 项目提供的加密库支持
+- 所有为项目做出贡献的开发者
+- 社区用户的反馈和建议
 
 ---
 
-<p align="center">
-  <sub>Built with ❤️ and ☕ by the Hachimi team</sub>
-</p>
+## 更新日志
+
+### v1.0.0 (当前版本)
+- ✅ 基础的文件编码/解码功能
+- ✅ AES-256-CBC 加密支持
+- ✅ 中文字符映射系统
+- ✅ Python 交互式界面
+- ✅ 批量文件处理
+- ✅ 基础的调试和测试工具
+
+### 计划中的更新
+- 🔄 密码系统集成 (v1.1)
+- 🔄 跨平台支持 (v2.0)
+- 🔄 GUI 界面开发 (v3.0)
+
+---
+
+如果您在使用过程中遇到问题或有改进建议，欢迎通过 GitHub Issues 与我们交流！
+
+**Happy Hacking! 🚀**
