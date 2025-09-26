@@ -99,9 +99,8 @@ class MainProcess:
                 print(f"当前加密密码: {password}")
 
             #GetFilepath.GetFile.get_file_v2()
-            if(not GetFilepath.GetFile.check_toprocess_exists_v2()):
-                print("请先创建ToProcess文件夹并放入要处理的文件，然后重新运行程序。")
-                return
+            from EncodeAndDecode.Encode import Encode
+            Encode()
 
 
 

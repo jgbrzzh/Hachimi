@@ -125,6 +125,11 @@ def get_project_root():
         p = p.parent
     return project_root
 
+def get_toprocess_dir():
+    project_root = get_project_root()
+    toprocess_dir = (project_root / "Toprocess").resolve()
+    return toprocess_dir
+
 def get_all_file_paths(
     source_folder,
     include_ext: Optional[Iterable[str]] = None,
@@ -151,7 +156,7 @@ def get_all_file_paths(
 
 def get_exe_path():
     project_root = get_project_root()
-    exe_path = exe_path = (project_root / "a.exe").resolve()
+    exe_path = (project_root / "a.exe").resolve()
     if not exe_path.is_file():
         raise FileNotFoundError(f"C++ 可执行文件不存在: {exe_path}")
     return exe_path
