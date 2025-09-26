@@ -184,11 +184,11 @@ def process_all_files(
             failed_items.append((str(abs_path), error_msg))
             print(f"失败: {abs_path} - {error_msg}")
             continue
-        from Config.Config import use_password, is_debug
+        from Config.Config import use_password, is_debug, password
         if(is_debug):
             print("from Config.Config import use_password, is_debug成功")
         if(use_password):
-            cmd = [str(abs_path), format, use_password]
+            cmd = [str(abs_path), format, password]
         else:
             cmd = [str(abs_path), format]
         try:
