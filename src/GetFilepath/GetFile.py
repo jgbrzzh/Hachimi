@@ -121,10 +121,10 @@ def check_toprocess_exists_v2():
 def get_project_root():
 
     project_root = Path(__file__).resolve()
-    print(project_root)
+    #print(project_root)
     for _ in range(3):
         project_root = project_root.parent
-    print(project_root)
+    #print(project_root)
     return project_root
 
 def get_toprocess_dir():
@@ -158,7 +158,7 @@ def get_all_file_paths(
 
 def get_exe_path():
     project_root = get_project_root()
-    exe_path = (project_root / "a.exe").resolve()
+    exe_path = (project_root / "ha.exe").resolve()
     if not exe_path.is_file():
         raise FileNotFoundError(f"C++ 可执行文件不存在: {exe_path}")
     return exe_path
