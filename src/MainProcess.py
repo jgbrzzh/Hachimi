@@ -3,6 +3,9 @@ created by: zzh 2025-09-21
 """
 
 
+
+
+
 class MainProcess:
     def __init__(self):
         self.count = 0
@@ -21,7 +24,7 @@ class MainProcess:
         #Config.Config.is_import_by_main_v2 = True  # 设定全局变量,表示被主程序调用
         Config.Config.change_import_by_main_v2(True)
         #Config.Config.is_debug = True  # 设定全局变量,表示是否开启调试模式
-        Config.Config.change_debug(True)
+        #Config.Config.change_debug(True)
         if(Config.Config.is_import_by_main_v2):
             print("从主程序启动")
         if(Config.Config.is_debug):
@@ -36,6 +39,18 @@ class MainProcess:
         print("2. 加密")
         print("3. 解密")
         print("4. 退出")
+
+    def get_password(self):
+        import Config.Config
+        if (not Config.Config.password):
+            password = input("请输入加密密码: ")
+            Config.Config.change_password(password)
+        else:
+            print("已设置加密密码，是否继续使用该密码。")
+            choice = input("输入 y 继续使用，其他键重新输入密码: ")
+            if choice.lower() != 'y':
+                password = input("请输入加密密码: ")
+                Config.Config.change_password(password)
 
     def get_choice(self):
         self.print_menu()
@@ -73,15 +88,27 @@ class MainProcess:
             
             """
             import Config.Config
+            """
             if(Config.Config.is_debug):
                 Config.Config.debug_info()
                 Config.Config.config_info()
+            """
+            self.get_password()
+            from Config.Config import password
+            if(Config.Config.is_debug):
+                print(f"当前加密密码: {password}")
 
             #GetFilepath.GetFile.get_file_v2()
-            GetFilepath.GetFile.check_toprocess_exists_v2()
+            from EncodeAndDecode.Encode import Encode
+            Encode()
+
+
+
+
 
         elif self.choice == '3':
-            pass
+            import Config.Config
+            self.get_password()
         elif self.choice == '4':
             print("退出程序。")
             exit(0)
