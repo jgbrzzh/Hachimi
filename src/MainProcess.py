@@ -24,7 +24,7 @@ class MainProcess:
         #Config.Config.is_import_by_main_v2 = True  # 设定全局变量,表示被主程序调用
         Config.Config.change_import_by_main_v2(True)
         #Config.Config.is_debug = True  # 设定全局变量,表示是否开启调试模式
-        Config.Config.change_debug(True)
+        #Config.Config.change_debug(True)
         if(Config.Config.is_import_by_main_v2):
             print("从主程序启动")
         if(Config.Config.is_debug):

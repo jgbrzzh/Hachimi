@@ -13,4 +13,4 @@ def Decode():
         print("ToProcess文件夹中没有文件，请添加文件后重新运行程序。")
         return
     exe_path = GetFile.get_exe_path()
-    GetFile.process_all_files(all_file_paths, "Decode", exe_path)
+    GetFile.process_all_files(all_file_paths, "decode", exe_path)

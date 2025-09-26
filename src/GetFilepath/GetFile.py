@@ -185,7 +185,7 @@ def process_all_files(
             print(f"失败: {abs_path} - {error_msg}")
             continue
 
-        cmd = [str(exe_path), str(abs_path), format]
+        cmd = [str(abs_path), format]
         try:
             # 期望 C++ 程序: argv[1] = 文件路径, argv[2] = format
             print(f"处理中: {abs_path}")
