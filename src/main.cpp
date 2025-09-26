@@ -66,7 +66,7 @@ int main(int argc, char* argv[])
 	while (1) {
 		size_t p = rootFile.find_last_of('\\');
 		tmp = rootFile.substr(p + 1, rootFile.size() - p - 1);
-		if (tmp._Equal("miaow"))
+		if (tmp._Equal("Hachimi"))
 			break;
 		rootFile = rootFile.substr(0, p);
 		cout << rootFile << endl;
