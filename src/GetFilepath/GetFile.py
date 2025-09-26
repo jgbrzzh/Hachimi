@@ -41,20 +41,23 @@ def get_file_v2(): #获取文件路径的函数(可以根据调用方式，返�
     from PreProcess.FilePreProcess import get_filepath
     import Config.Config
     is_debug = Config.Config.is_debug
-    print(f"Debug状态: {is_debug}")
+    if is_debug:
+        print(__file__)
+
     
     if(is_debug):
         #print("from src.PreProcess.FilePreProcess import get_filepath执行成功")
         pass
     current_dir, project_root, toprocess_dir = get_filepath()
-    if(is_import_by_main):#检测是否被主程序调用
-        print("当前GetFilepath模块被主程序调用，正在执行get_file_v2")
-        print(f"当前目录(即主程序所在目录): {current_dir}")
-        print(f"项目根目录: {project_root}")
-    else:
-        print("当前GetFilepath模块未被主程序调用，正在执行get_file_v2")
-        print(f"当前目录: {current_dir}")
-        print(f"代码根目录: {project_root}")
+    if is_debug:
+        if(is_import_by_main):#检测是否被主程序调用
+            print("当前GetFilepath模块被主程序调用，正在执行get_file_v2")
+            print(f"当前目录(即主程序所在目录): {current_dir}")
+            print(f"项目根目录: {project_root}")
+        else:
+            print("当前GetFilepath模块未被主程序调用，正在执行get_file_v2")
+            print(f"当前目录: {current_dir}")
+            print(f"代码根目录: {project_root}")
     return current_dir, project_root, toprocess_dir
 
 
@@ -63,18 +66,19 @@ def check_toprocess_exists_v2():
     
     from Config.Config import is_debug
     from Config.Config import debug_info
-    debug_info()
-    if(is_import_by_main and is_debug):#检测是否被主程序调用
-        print("当前GetFilepath模块被主程序调用，正在执行check_toprocess_exists_v2")
-        """
-        print(f"当前目录(即主程序所在目录): {current_dir}")
-        print(f"项目根目录: {project_root}")
-        print(toprocess_dir)
-        """
-    else:
-        print("当前GetFilepath模块未被主程序调用，正在执行check_toprocess_exists_v2")
-        print(f"当前目录: {current_dir}")
-        print(f"代码根目录: {project_root}")
+    if(is_debug):
+        debug_info()
+        if(is_import_by_main):#检测是否被主程序调用
+            print("当前GetFilepath模块被主程序调用，正在执行check_toprocess_exists_v2")
+            """
+            print(f"当前目录(即主程序所在目录): {current_dir}")
+            print(f"项目根目录: {project_root}")
+            print(toprocess_dir)
+            """
+        else:
+            print("当前GetFilepath模块未被主程序调用，正在执行check_toprocess_exists_v2")
+            print(f"当前目录: {current_dir}")
+            print(f"代码根目录: {project_root}")
     
     if not toprocess_dir.exists():
         print(f"ToProcess文件夹不存在: {toprocess_dir}")
