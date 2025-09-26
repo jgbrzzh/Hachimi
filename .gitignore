@@ -33,3 +33,5 @@ a.exe
 count_lines.py
 a.dll
 a.pdb
+*.exe
+*.exe
