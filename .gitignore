@@ -24,7 +24,7 @@ temp
 /src/GetFile/__pycache__
 /src/*.exe
 /src/temp
-
+/result/*
 
 *.pyc
 

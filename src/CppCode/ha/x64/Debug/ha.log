@@ -1,0 +1,15 @@
+﻿  main.cpp
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.40.33807\include\filesystem(12): warning STL4038: The contents of <filesystem> are available only with C++17 or later.
+D:\App\c\Hachimi\src\CppCode\main.cpp(65,16): warning C4996: 'getcwd': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getcwd. See online help for details.
+D:\App\c\Hachimi\src\CppCode\main.cpp(156,13): warning C4267: “初始化”: 从“size_t”转换到“int”，可能丢失数据
+D:\App\c\Hachimi\src\CppCode\main.cpp(158,56): warning C4267: “参数”: 从“size_t”转换到“int”，可能丢失数据
+D:\App\c\Hachimi\src\CppCode\main.cpp(171,12): warning C4267: “初始化”: 从“size_t”转换到“int”，可能丢失数据
+D:\App\c\Hachimi\src\CppCode\main.cpp(172,13): warning C4267: “初始化”: 从“size_t”转换到“int”，可能丢失数据
+D:\App\c\Hachimi\src\CppCode\main.cpp(207,8): warning C4267: “初始化”: 从“size_t”转换到“int”，可能丢失数据
+D:\App\c\Hachimi\src\CppCode\main.cpp(338,84): warning C4267: “参数”: 从“size_t”转换到“int”，可能丢失数据
+D:\App\c\Hachimi\src\CppCode\main.cpp(393,84): warning C4267: “参数”: 从“size_t”转换到“int”，可能丢失数据
+  pathGet.cpp
+  正在生成代码...
+  ha.vcxproj -> D:\App\c\Hachimi\src\CppCode\x64\Debug\ha.exe
+  'pwsh.exe' 不是内部或外部命令，也不是可运行的程序
+  或批处理文件。

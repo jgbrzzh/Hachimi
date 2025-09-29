@@ -13,6 +13,8 @@
 #include <openssl/rand.h>
 #include <openssl/err.h>
 
+#include "pathGet.h"
+
 //ha 0  Ήώ
 //ji 1	»ω
 //mi 01	ίδ
@@ -35,6 +37,7 @@ private:
 	ifstream binContent;
 	string  InFileName;
 	bool _Encode;
+	string password;
 
 	// aescryp
 	int _aesEncode();
@@ -47,35 +50,27 @@ private:
 	int remap();
 	
 public:
-	static char pass[];
-	hachimi(string inFile,bool _ifEncode);
+	hachimi(string inFile,bool _ifEncode,string _pass);
+	~hachimi() = default;
 	int encode() { _aesEncode(); map(); write(); return 0; }
 	int decode() { remap(); _aesDecode(); write(); return 0; }
 };
 
-//aes password
-char hachimi::pass[] = "aabbcc";
+
+
 
 int main(int argc, char* argv[])
 {
 	char   buffer[128];
-	getcwd(buffer, 128);
-	string tmp;
-	string rootFile(buffer);
+	char* atemp = getcwd(buffer, 128);
 
-	while (1) {
-		size_t p = rootFile.find_last_of('\\');
-		tmp = rootFile.substr(p + 1, rootFile.size() - p - 1);
-		if (tmp._Equal("Hachimi"))
-			break;
-		rootFile = rootFile.substr(0, p);
-		cout << rootFile << endl;
-	}
-	EncodeOutFile = rootFile + "/result/encode.txt";
-	DeEncodeOutFile = rootFile + "/result/decode.bin";
+	string pass;
+	pathGet pget(string(buffer), "Hachimi");
+
+	EncodeOutFile = pget.getRootDir() + "/result/encode.txt";
+	DeEncodeOutFile = pget.getRootDir() + "/result/decode.bin";
 
 	bool ifEncode = true;//true:encode ; false:decode
-	//ifEncode = false;
 #if true
 	switch (argc)
 	{
@@ -102,18 +97,29 @@ int main(int argc, char* argv[])
 			return -1;
 		}
 		break;
+	case 4://0 filepath <encode/decode> password
+		cout << "method 4" << endl;
+		FileName = string(argv[1]);
+
+		if (string(argv[2]) == string("encode")) {
+			ifEncode = true;
+		}
+		else if (string(argv[2]) == string("decode")) {
+			ifEncode = false;
+		}
+		else {
+			cout << "<encode/decode>" << endl;
+			return -1;
+		}
+		pass = string(argv[3]);
+		break;
 	default:
 		return -1;
 		break;
 	}
 #endif
 
-	//if(ifEncode)
-	//	FileName = DeEncodeOutFile;
-	//else
-	//	FileName = EncodeOutFile;
-
-	hachimi ha(FileName, ifEncode);
+	hachimi ha(FileName, ifEncode, pass);
 	if (ifEncode){
 		ha.encode();		//encode
 	}
@@ -131,7 +137,7 @@ int hachimi::_aesEncode()
 	unsigned char* out = new unsigned char[msg.size() + 16];
 	int outLen = msg.size() + 16;
 	copy(msg.begin(), msg.end(), in);
-	aesEncode(pass, (char*)in, msg.size(), (char*)out, &outLen);
+	aesEncode((char*)password.c_str(), (char*)in, msg.size(), (char*)out, &outLen);
 	msg.clear();
 	for (int i = 0;i < outLen;i++)
 	{
@@ -147,7 +153,7 @@ int hachimi::_aesDecode()
 	int inLen = outBin.size();
 	int outLen = outBin.size() + 16;
 	copy(outBin.begin(), outBin.end(), in);
-	aesDecode(pass, (char*)in, inLen, (char*)out, &outLen);
+	aesDecode((char*)password.c_str(), (char*)in, inLen, (char*)out, &outLen);
 	outBin.clear();
 	for (int i = 0;i < outLen;i++)
 	{
@@ -156,8 +162,8 @@ int hachimi::_aesDecode()
 	return 0;
 }
 
-hachimi::hachimi(string inFile, bool _ifEncode)
-	:InFileName(inFile), _Encode(_ifEncode)
+hachimi::hachimi(string inFile, bool _ifEncode, string _pass = "aabbcc")
+	:InFileName(inFile), _Encode(_ifEncode), password(_pass)
 {
 	binContent.open(InFileName, ios::in);
 	readBin();
