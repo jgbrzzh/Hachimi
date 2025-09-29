@@ -21,3 +21,16 @@ pathGet::pathGet(string _myPath, string _rootDirName = "Hachimi")
 	cout << "workdir:" << _myPath << endl;
 	workRootDir = _myPath;
 }
+
+int pathGet::inFileName(string _inFilePath)
+{
+	size_t p = _inFilePath.find_last_of('\\');
+	_inFilePath = _inFilePath.substr(p + 1, _inFilePath.size() - p - 1);
+	fileName = _inFilePath.substr(_inFilePath.size() - _inFilePath.find_last_of('.') - 1);
+	return 0;
+}
+
+string pathGet::getFileName()
+{
+	return fileName;
+}

@@ -67,9 +67,6 @@ int main(int argc, char* argv[])
 	string pass;
 	pathGet pget(string(buffer), "Hachimi");
 
-	EncodeOutFile = pget.getRootDir() + "/result/encode.txt";
-	DeEncodeOutFile = pget.getRootDir() + "/result/decode.bin";
-
 	bool ifEncode = true;//true:encode ; false:decode
 #if true
 	switch (argc)
@@ -119,6 +116,10 @@ int main(int argc, char* argv[])
 	}
 #endif
 
+	pget.inFileName(FileName);
+	EncodeOutFile = pget.getRootDir() + string("/result/") + pget.getFileName() + string(".txt");
+	DeEncodeOutFile = pget.getRootDir() + string("/result/") + pget.getFileName() + string(".bin");
+	
 	hachimi ha(FileName, ifEncode, pass);
 	if (ifEncode){
 		ha.encode();		//encode

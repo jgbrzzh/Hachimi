@@ -17,6 +17,8 @@ public:
 	pathGet(string _myPath,string _rootDirName);
 	~pathGet() = default;
 	string getRootDir() { return workRootDir; }
+	int inFileName(string _inFilePath);
+	string getFileName();
 };
 
 
