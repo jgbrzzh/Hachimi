@@ -40,6 +40,7 @@ class MainProcess:
         print("3. 解密")
         print("4. 退出")
 
+
     def get_password(self):
         import Config.Config
         if (not Config.Config.password):
@@ -55,6 +56,14 @@ class MainProcess:
     def get_choice(self):
         self.print_menu()
         self.choice = input("输入选项编号 (1-4): ")
+    def check_toprocess_exists(self):
+        from GetFilepath.GetFile import get_project_root
+        project_root = get_project_root()
+        result_dir = project_root / "Result"
+        if not result_dir.exists():
+            result_dir.mkdir(parents=True, exist_ok=True)
+            #print("未找到Result文件夹")
+            print(f"已创建Result文件夹: {result_dir}")
 
     def process_choice(self):
         #self.choice = input("输入选项编号 (1-4): ")
@@ -68,6 +77,7 @@ class MainProcess:
         #from GetFilepath.GetFile import get_file_v2 #弃用 改为直接导入整个模块
         import GetFilepath.GetFile
         GetFilepath.GetFile.is_import_by_main = True #告诉GetFile模块它是被主程序调用的
+
         if self.choice == '1':
             main_FileProProcess_run()
         elif self.choice == '2':
@@ -120,6 +130,7 @@ class MainProcess:
         self.set_up_golbal()
 
         while True:
+            self.check_toprocess_exists()
             self.get_choice()
             self.process_choice()
 
