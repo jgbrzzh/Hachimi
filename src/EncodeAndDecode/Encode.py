@@ -14,3 +14,6 @@ def Encode():
         return
     exe_path = GetFile.get_exe_path()
     GetFile.process_all_files(all_file_paths, "encode", exe_path)
+
+def Encode_v2():
+    sys.path.append(os.path.join(os.path.dirname(__file__), ".."))

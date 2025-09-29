@@ -25,10 +25,14 @@ class MainProcess:
         Config.Config.change_import_by_main_v2(True)
         #Config.Config.is_debug = True  # 设定全局变量,表示是否开启调试模式
         #Config.Config.change_debug(True)
+        #Config.Config.change_import_by_main_v2(False)
+        #Config.Config.change_is_use_v2(True)
         if(Config.Config.is_import_by_main_v2):
             print("从主程序启动")
         if(Config.Config.is_debug):
             print("开启调试模式")
+        if(Config.Config.is_use_v2):
+            print("使用v2版本")
 
     def print_menu(self):
         self.count += 1
@@ -39,6 +43,14 @@ class MainProcess:
         print("2. 加密")
         print("3. 解密")
         print("4. 退出")
+    def print_menu_v2(self):
+        self.count += 1
+        if self.count == 1:
+            print("开始运行前请将要处理的文件放入ToProcess文件夹中，处理完成的文件会保存在Result文件夹中。")
+        print("请选择要进行的操作:")
+        print("1. 加密 v2")
+        print("2. 解密 v2")
+        print("3. 退出")
 
 
     def get_password(self):
@@ -54,7 +66,6 @@ class MainProcess:
                 Config.Config.change_password(password)
 
     def get_choice(self):
-        self.print_menu()
         self.choice = input("输入选项编号 (1-4): ")
     def check_toprocess_exists(self):
         from GetFilepath.GetFile import get_project_root
@@ -126,13 +137,25 @@ class MainProcess:
             exit(0)
         else:
             print("无效选项，请重新选择。")
+    def process_choice_v2(self):
+        pass
     def run(self):
         self.set_up_golbal()
 
         while True:
-            self.check_toprocess_exists()
-            self.get_choice()
-            self.process_choice()
+            from Config.Config import is_use_v2
+            if(is_use_v2==False):
+                self.check_toprocess_exists()
+                self.print_menu()
+                self.get_choice()
+                self.process_choice()
+            else:
+                self.check_toprocess_exists()
+                self.print_menu_v2()
+                self.get_choice()
+                self.process_choice_v2()
+                print("v2版本尚未完成，正在开发中...")
+                break
 
 def main():
     main_Process = MainProcess()
